@@ -329,9 +329,9 @@ func sqlToHandlerParam(in *pb.Column) string {
 func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 	convStr := ""
 
-	if in.Type.Schema != "pg_catalog" {
+	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" {
 		//assume it's an enum for now
-		return in.Type.Schema + "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
+		return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
 	}
 
 	switch in.Type.Name {
