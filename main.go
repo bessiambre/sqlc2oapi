@@ -335,11 +335,11 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 	}
 
 	switch in.Type.Name {
-	case "jsonb", "json":
+	case "jsonb":
 		if in.NotNull {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
+			convStr = in.Type.Schema + "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		} else {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
+			convStr = in.Type.Schema + "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		}
 	default:
 		convStr = "res." + strings.Title(snakeToGoCamel(in.Name))
@@ -352,7 +352,7 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 	convStr := ""
 
 	switch in.Type.Name {
-	case "jsonb", "json":
+	case "jsonb":
 		if !in.NotNull {
 			convStr = "PgtypeJSONBtoMap(res)"
 		} else {
