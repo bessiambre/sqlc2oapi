@@ -30,7 +30,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .
 		res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
 			{{ range .Params }}
 				{{- snakeToGoCamel .Column.Name }}:{{ snakeToCamel .Column.Name }},
-			{{end-}}
+			{{end -}}
 			},
 		)
 	{{- end }}
