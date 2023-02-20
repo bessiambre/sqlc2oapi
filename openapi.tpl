@@ -15,7 +15,7 @@ servers:
 paths:
   {{ range .Queries }}
   ### {{ .Name }} ###
-  #Text {{ .Text | replace "\n" "\n #" }} 
+  #Query {{ .Text | replace "\n" "\n  # " }} 
   #Cmd {{ .Cmd }}
   #Comments {{ .Comments }}
   #Filename {{ .Filename }}
@@ -25,7 +25,7 @@ paths:
       - name: {{ .Column.Name }}
         in: query
         required: true
-        schema: {{ sqlcToOa3Spec .Column }} #${{ .Number }}
+        schema: {{ sqlToOa3Spec .Column }} #${{ .Number }}
     {{- end }}
     get:
       operationId: {{ .Name }}
@@ -55,7 +55,7 @@ components:
       type: object
       properties:
         {{- range .Columns }}
-          {{ .Name }}: {{ sqlcToOa3Spec . }}
+          {{ .Name }}: {{ sqlToOa3Spec . }}
         {{- end }}
       required:
         {{- range .Columns }}

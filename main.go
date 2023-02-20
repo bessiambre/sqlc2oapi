@@ -28,10 +28,12 @@ var openApiTpl string
 var handlerTpl string
 
 var TemplateFunctions = map[string]any{
-	"camelSnake":         camelSnake,
-	"snakeToCamel":       snakeToCamel,
-	"sqlcToOa3Spec":      sqlcTypeToOa3SpecType,
-	"sqlcToHandlerParam": sqlcToHandlerParam,
+	"camelSnake":              camelSnake,
+	"snakeToCamel":            snakeToCamel,
+	"sqlToOa3Spec":            sqlTypeToOa3SpecType,
+	"sqlToHandlerParam":       sqlToHandlerParam,
+	"sqlcTypeToOa3Type":       sqlcTypeToOa3Type,
+	"sqlcTypeToOa3TypeSingle": sqlcTypeToOa3TypeSingle,
 }
 
 func main() {
@@ -239,7 +241,7 @@ func snakeToCamel(name string) string {
 	return out.String()
 }
 
-func sqlcTypeToOa3SpecType(in *pb.Column) string {
+func sqlTypeToOa3SpecType(in *pb.Column) string {
 	typeStr := "type: object"
 
 	switch in.Type.Name {
@@ -257,6 +259,8 @@ func sqlcTypeToOa3SpecType(in *pb.Column) string {
 		typeStr = "type: boolean"
 	case "jsonb":
 		typeStr = "type: object"
+	case "json":
+		typeStr = "type: object"
 	}
 
 	if !in.NotNull {
@@ -266,7 +270,7 @@ func sqlcTypeToOa3SpecType(in *pb.Column) string {
 	return fmt.Sprintf("{ %s }", typeStr)
 }
 
-func sqlcToHandlerParam(in *pb.Column) string {
+func sqlToHandlerParam(in *pb.Column) string {
 
 	//skip userid as it is extracted from ctx
 	if in.Name == "user_id" {
@@ -286,8 +290,12 @@ func sqlcToHandlerParam(in *pb.Column) string {
 		typeStr = "chrono.Date"
 	case "timestamptz":
 		typeStr = "chrono.DateTime"
-	case "bool":
-		typeStr = "type: boolean"
+	case "bool", "pg_catalog.bool":
+		typeStr = "bool"
+	case "jsonb":
+		typeStr = "map[string]any"
+	case "json":
+		typeStr = "map[string]any"
 	}
 
 	if !in.NotNull {
@@ -295,6 +303,40 @@ func sqlcToHandlerParam(in *pb.Column) string {
 	}
 
 	return fmt.Sprintf(", %s %s", snakeToCamel(in.Name), typeStr)
+}
+
+func sqlcTypeToOa3Type(in *pb.Column) string {
+	convStr := ""
+
+	switch in.Type.Name {
+	case "jsonb", "json":
+		if !in.NotNull {
+			convStr = "PgtypeJSONBtoMap(res." + strings.Title(snakeToCamel(in.Name)) + ")"
+		} else {
+			convStr = "PgtypeJSONBtoMap(res." + strings.Title(snakeToCamel(in.Name)) + ")"
+		}
+	default:
+		convStr = "res." + strings.Title(snakeToCamel(in.Name))
+	}
+
+	return convStr
+}
+
+func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
+	convStr := ""
+
+	switch in.Type.Name {
+	case "jsonb", "json":
+		if !in.NotNull {
+			convStr = "PgtypeJSONBtoMap(res)"
+		} else {
+			convStr = "PgtypeJSONBtoMap(res)"
+		}
+	default:
+		convStr = "res"
+	}
+
+	return convStr
 }
 
 // for debugging
