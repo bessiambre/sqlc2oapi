@@ -1,4 +1,4 @@
-module github.com/ProlificLabs/sqlc2oapi
+module github.com/bessiambre/sqlc2oapi
 
 go 1.19
 
