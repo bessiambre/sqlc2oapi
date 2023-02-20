@@ -12,7 +12,7 @@ import(
 	"github.com/aarondl/opt/null"
 )
 
-{{ _, $query := range .Queries }}
+{{ range $query := .Queries }}
 /*** 
  * {{ .Name }}
  * {{ .Text | replace "\n" "\n * "}}
