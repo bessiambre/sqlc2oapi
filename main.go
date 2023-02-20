@@ -331,15 +331,15 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 
 	if in.Type.Schema != "pg_catalog" {
 		//assume it's an enum for now
-		return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
+		return in.Type.Schema + "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
 	}
 
 	switch in.Type.Name {
 	case "jsonb":
 		if in.NotNull {
-			convStr = in.Type.Schema + "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		} else {
-			convStr = in.Type.Schema + "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		}
 	default:
 		convStr = "res." + strings.Title(snakeToGoCamel(in.Name))
