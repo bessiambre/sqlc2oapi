@@ -254,7 +254,7 @@ func snakeToGoCamel(name string) string {
 func sqlTypeToOa3SpecType(in *pb.Column) string {
 	typeStr := "type: object"
 
-	if in.Type.Schema != "pg_catalog" {
+	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" {
 		//assume it's an enum for now
 		typeStr = "type: string"
 	} else {
@@ -294,7 +294,7 @@ func sqlToHandlerParam(in *pb.Column) string {
 
 	typeStr := "any"
 
-	if in.Type.Schema != "pg_catalog" {
+	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" {
 		//assume it's an enum for now
 		typeStr = "string"
 	} else {
