@@ -81,8 +81,8 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 	// 	filename = options.Filename
 	// }
 
-	for _, query := range req.Queries {
-	}
+	// for _, query := range req.Queries {
+	// }
 
 	tmpl, err := template.New("openapi").Funcs(sprig.FuncMap()).Funcs(TemplateFunctions).Parse(openApiTpl)
 	if err != nil {
