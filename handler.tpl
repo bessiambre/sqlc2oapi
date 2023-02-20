@@ -28,10 +28,10 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .
 	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToCamel .Column.Name }}{{end}})
 	{{- else }}
 		res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
-			{{ range .Params }}
-				{{ snakeToGoCamel .Column.Name }}:{{ snakeToCamel .Column.Name }},
+			{{- range .Params }}
+				{{- snakeToGoCamel .Column.Name }}:{{ snakeToCamel .Column.Name }},
 			{{end}}
-			}
+			},
 		)
 	{{- end }}
 	if err != nil {
