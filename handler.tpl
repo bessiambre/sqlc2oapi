@@ -21,9 +21,9 @@ import(
  * {{ .Filename }}
  */
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .Params }}{{ sqlToHandlerParam .Column }}{{end}}) (*sqlcoa3gen.{{ .Name }}Return, error) {
-	UserID, _ := dcontext.UserID(r.Context())
+	userId, _ := dcontext.UserID(r.Context())
 
-	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToGoCamel .Column.Name }}{{end}})
+	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToCamel .Column.Name }}{{end}})
 	if err != nil {
 		return nil, eris.Wrapf(err, "{{ .Name }}: query failure")
 	}
