@@ -87,7 +87,7 @@ func MapToPgtypeJSONB(in map[string]any) pgtype.JSONB {
 	if in != nil {
 		fd.Set(in)
 	}
-	return fd, nil
+	return fd
 }
 
 func MapToNullPgtypeJSONB(in map[string]any) null.Val[pgtype.JSONB] {

@@ -318,6 +318,10 @@ func sqlToHandlerParam(in *pb.Column) string {
 func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 	convStr := ""
 
+	// if in.Type.Schema != nil {
+	// 	//
+	// }
+
 	switch in.Type.Name {
 	case "jsonb", "json":
 		if in.NotNull {
@@ -326,7 +330,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		}
 	default:
-		convStr = "res." + strings.Title(snakeToGoCamel(in.Name))
+		convStr = in.Type.Schema + "res." + strings.Title(snakeToGoCamel(in.Name))
 	}
 
 	return convStr
