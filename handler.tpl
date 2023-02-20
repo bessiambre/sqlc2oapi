@@ -21,7 +21,7 @@ import(
  * {{ .Filename }}
  */
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .Params }}{{ sqlToHandlerParam .Column }}{{end}}) (*sqlcoa3gen.{{ .Name }}Return, error) {
-	UserID, _ := dcontext.UserID(ctx)
+	UserID, _ := dcontext.UserID(r.Context())
 
 	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToGoCamel .Column.Name }}{{end}})
 	if err != nil {

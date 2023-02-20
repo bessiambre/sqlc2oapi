@@ -209,34 +209,34 @@ func camelSnake(filename string) string {
 	return build.String()
 }
 
-// func snakeToCamel(in string) string {
-// 	build := new(strings.Builder)
-// 	sawUnderscore := false
-// 	for _, r := range in {
-// 		if r == '_' {
-// 			sawUnderscore = true
-// 			continue
-// 		}
+func snakeToCamel(in string) string {
+	build := new(strings.Builder)
+	sawUnderscore := false
+	for _, r := range in {
+		if r == '_' {
+			sawUnderscore = true
+			continue
+		}
 
-// 		if sawUnderscore {
-// 			sawUnderscore = false
-// 			build.WriteRune(unicode.ToUpper(r))
-// 		} else {
-// 			build.WriteRune(r)
-// 		}
-// 	}
-
-// 	return build.String()
-// }
-
-func snakeToCamel(name string) string {
-	out := new(strings.Builder)
-	for _, p := range strings.Split(name, "_") {
-		out.WriteString(strings.Title(p))
+		if sawUnderscore {
+			sawUnderscore = false
+			build.WriteRune(unicode.ToUpper(r))
+		} else {
+			build.WriteRune(r)
+		}
 	}
 
-	return out.String()
+	return build.String()
 }
+
+// func snakeToCamel(name string) string {
+// 	out := new(strings.Builder)
+// 	for _, p := range strings.Split(name, "_") {
+// 		out.WriteString(strings.Title(p))
+// 	}
+
+// 	return out.String()
+// }
 
 func snakeToGoCamel(name string) string {
 	out := new(strings.Builder)
