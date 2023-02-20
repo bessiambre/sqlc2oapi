@@ -62,7 +62,6 @@ func PgtypeJSONBtoMap(jsonb pgtype.JSONB) map[string]any {
 	}
 }
 
-
 func NullPgtypeJSONBtoMap(nulljsonb null.Val[pgtype.JSONB]) *map[string]any {
 	if nulljsonb.IsNull(){
 		return nil
@@ -75,7 +74,7 @@ func NullPgtypeJSONBtoMap(nulljsonb null.Val[pgtype.JSONB]) *map[string]any {
 	}
 	switch v := jsonb.Get().(type) {
 	case map[string]any:
-		return v
+		return &v
 	case pgtype.Status:
 		return nil
 	default:
