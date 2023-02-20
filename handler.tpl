@@ -23,16 +23,15 @@ import(
  */
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .Params }}{{ sqlToHandlerParam .Column }}{{end}}) (*sqlcoa3gen.{{ .Name }}Return, error) {
 	userId, _ := dcontext.UserID(r.Context())
-
 	{{ if eq (len .Params) 1 }}
 	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToCamel .Column.Name }}{{end}})
 	{{- else }}
-		res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
-			{{ range .Params }}
-				{{- snakeToGoCamel .Column.Name }}:{{ snakeToCamel .Column.Name }},
-			{{end -}}
-			},
-		)
+	res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
+		{{ range .Params }}
+			{{- snakeToGoCamel .Column.Name }}:{{ snakeToCamel .Column.Name }},
+		{{end -}}
+		},
+	)
 	{{- end }}
 	if err != nil {
 		return nil, eris.Wrapf(err, "{{ .Name }}: query failure")
