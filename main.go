@@ -96,6 +96,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 			}
 		}
 		newQuery.Params = newParams
+		queriesForOapi = append(queriesForOapi, &newQuery)
 	}
 
 	if !userIdFound {
