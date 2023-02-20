@@ -17,7 +17,7 @@ import (
 	"unicode"
 
 	"github.com/Masterminds/sprig"
-	"github.com/ProlificLabs/sqlc2oapi/pb"
+	"github.com/bessiambre/sqlc2oapi/pb"
 )
 
 //go:embed openapi.tpl
