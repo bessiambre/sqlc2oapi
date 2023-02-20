@@ -254,25 +254,30 @@ func snakeToGoCamel(name string) string {
 func sqlTypeToOa3SpecType(in *pb.Column) string {
 	typeStr := "type: object"
 
-	switch in.Type.Name {
-	case "int4", "pg_catalog.int4":
-		typeStr = "type: integer, format: int32"
-	case "numeric", "pg_catalog.numeric":
-		typeStr = "type: string, format: decimal"
-	case "text":
+	if in.Type.Schema != "pg_catalog" {
+		//assume it's an enum for now
 		typeStr = "type: string"
-	case "date":
-		typeStr = "type: string, format: date"
-	case "timestamptz":
-		typeStr = "type: string, format: date-time"
-	case "bool":
-		typeStr = "type: boolean"
-	case "jsonb":
-		typeStr = "type: object"
-	case "json":
-		typeStr = "type: object"
-	}
+	} else {
 
+		switch in.Type.Name {
+		case "int4", "pg_catalog.int4":
+			typeStr = "type: integer, format: int32"
+		case "numeric", "pg_catalog.numeric":
+			typeStr = "type: string, format: decimal"
+		case "text":
+			typeStr = "type: string"
+		case "date":
+			typeStr = "type: string, format: date"
+		case "timestamptz":
+			typeStr = "type: string, format: date-time"
+		case "bool":
+			typeStr = "type: boolean"
+		case "jsonb":
+			typeStr = "type: object"
+		case "json":
+			typeStr = "type: object"
+		}
+	}
 	if !in.NotNull {
 		typeStr += ", nullable: true"
 	}
@@ -289,23 +294,29 @@ func sqlToHandlerParam(in *pb.Column) string {
 
 	typeStr := "any"
 
-	switch in.Type.Name {
-	case "int4", "pg_catalog.int4":
-		typeStr = "int32"
-	case "numeric", "pg_catalog.numeric":
-		typeStr = "decimal.Decimal"
-	case "text":
+	if in.Type.Schema != "pg_catalog" {
+		//assume it's an enum for now
 		typeStr = "string"
-	case "date":
-		typeStr = "chrono.Date"
-	case "timestamptz":
-		typeStr = "chrono.DateTime"
-	case "bool", "pg_catalog.bool":
-		typeStr = "bool"
-	case "jsonb":
-		typeStr = "map[string]any"
-	case "json":
-		typeStr = "map[string]any"
+	} else {
+
+		switch in.Type.Name {
+		case "int4", "pg_catalog.int4":
+			typeStr = "int32"
+		case "numeric", "pg_catalog.numeric":
+			typeStr = "decimal.Decimal"
+		case "text":
+			typeStr = "string"
+		case "date":
+			typeStr = "chrono.Date"
+		case "timestamptz":
+			typeStr = "chrono.DateTime"
+		case "bool", "pg_catalog.bool":
+			typeStr = "bool"
+		case "jsonb":
+			typeStr = "map[string]any"
+		case "json":
+			typeStr = "map[string]any"
+		}
 	}
 
 	if !in.NotNull {
@@ -318,9 +329,10 @@ func sqlToHandlerParam(in *pb.Column) string {
 func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 	convStr := ""
 
-	// if in.Type.Schema != nil {
-	// 	//
-	// }
+	if in.Type.Schema != "pg_catalog" {
+		//assume it's an enum for now
+		return "string(" + in.Type.Schema + "res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
+	}
 
 	switch in.Type.Name {
 	case "jsonb", "json":
@@ -330,7 +342,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		}
 	default:
-		convStr = in.Type.Schema + "res." + strings.Title(snakeToGoCamel(in.Name))
+		convStr = "res." + strings.Title(snakeToGoCamel(in.Name))
 	}
 
 	return convStr
