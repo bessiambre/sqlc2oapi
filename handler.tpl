@@ -5,6 +5,7 @@ import(
 	"github.com/ProlificLabs/snowball/sqlcapi/gen/sqlcoa3gen"
 	"github.com/ProlificLabs/snowball/api/oa3api/middleware"
 	"github.com/rotisserie/eris"
+	"github.com/ProlificLabs/snowball/dcontext"
 )
 
 {{ range .Queries }}
@@ -16,7 +17,9 @@ import(
  * {{ .Filename }}
  */
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .Params }}{{ sqlcToHandlerParam .Column }}{{end}}) (*sqlcoa3gen.{{ .Name }}Return, error) {
-    res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToCamel .Column.Name }}{{end}})
+	UserID, _ := dcontext.UserID(ctx)
+
+	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToCamel .Column.Name }}{{end}})
 	if err != nil {
 		return nil, eris.Wrapf(err, "{{ .Name }}: query failure")
 	}

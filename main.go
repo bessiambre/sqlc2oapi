@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	ejson "encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -81,8 +82,25 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 	// 	filename = options.Filename
 	// }
 
-	// for _, query := range req.Queries {
-	// }
+	//user_id is passed from logged in user don't include in oapi
+	userIdFound := false
+	var queriesForOapi []*pb.Query = make([]*pb.Query, 0, len(req.Queries))
+	for _, query := range req.Queries {
+		newQuery := *query
+		var newParams []*pb.Parameter = make([]*pb.Parameter, 0, len(query.Params))
+		for _, param := range query.Params {
+			if param.Column.Name != "user_id" {
+				newParams = append(newParams, param)
+			} else {
+				userIdFound = true
+			}
+		}
+		newQuery.Params = newParams
+	}
+
+	if !userIdFound {
+		return nil, errors.New("query must take @user_id parameter to verify permissions")
+	}
 
 	tmpl, err := template.New("openapi").Funcs(sprig.FuncMap()).Funcs(TemplateFunctions).Parse(openApiTpl)
 	if err != nil {
@@ -90,7 +108,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 	}
 	buff := new(bytes.Buffer)
 	err = tmpl.Execute(buff, map[string]any{
-		"Queries": req.Queries,
+		"Queries": queriesForOapi,
 	})
 	if err != nil {
 		return nil, err
@@ -248,6 +266,12 @@ func sqlcTypeToOa3SpecType(in *pb.Column) string {
 }
 
 func sqlcToHandlerParam(in *pb.Column) string {
+
+	//skip userid as it is extracted from ctx
+	if in.Name == "user_id" {
+		return ""
+	}
+
 	typeStr := "any"
 
 	switch in.Type.Name {
