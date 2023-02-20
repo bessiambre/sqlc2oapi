@@ -331,7 +331,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 
 	if in.Type.Schema != "pg_catalog" {
 		//assume it's an enum for now
-		return "string(" + in.Type.Schema + "res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
+		return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
 	}
 
 	switch in.Type.Name {
