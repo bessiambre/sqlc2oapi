@@ -30,6 +30,7 @@ var handlerTpl string
 var TemplateFunctions = map[string]any{
 	"camelSnake":              camelSnake,
 	"snakeToCamel":            snakeToCamel,
+	"snakeToGoCamel":          snakeToGoCamel,
 	"sqlToOa3Spec":            sqlTypeToOa3SpecType,
 	"sqlToHandlerParam":       sqlToHandlerParam,
 	"sqlcTypeToOa3Type":       sqlcTypeToOa3Type,
@@ -231,6 +232,15 @@ func camelSnake(filename string) string {
 func snakeToCamel(name string) string {
 	out := new(strings.Builder)
 	for _, p := range strings.Split(name, "_") {
+		out.WriteString(strings.Title(p))
+	}
+
+	return out.String()
+}
+
+func snakeToGoCamel(name string) string {
+	out := new(strings.Builder)
+	for _, p := range strings.Split(name, "_") {
 		if p == "id" { // matches sqlc's func StructName
 			out.WriteString("ID")
 		} else {
@@ -305,24 +315,24 @@ func sqlToHandlerParam(in *pb.Column) string {
 	return fmt.Sprintf(", %s %s", snakeToCamel(in.Name), typeStr)
 }
 
-func sqlcTypeToOa3Type(in *pb.Column) string {
+func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 	convStr := ""
 
 	switch in.Type.Name {
 	case "jsonb", "json":
-		if !in.NotNull {
-			convStr = "PgtypeJSONBtoMap(res." + strings.Title(snakeToCamel(in.Name)) + ")"
+		if in.NotNull {
+			convStr = queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + "(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		} else {
-			convStr = "PgtypeJSONBtoMap(res." + strings.Title(snakeToCamel(in.Name)) + ")"
+			convStr = queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + "(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
 		}
 	default:
-		convStr = "res." + strings.Title(snakeToCamel(in.Name))
+		convStr = "res." + strings.Title(snakeToGoCamel(in.Name))
 	}
 
 	return convStr
 }
 
-func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
+func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 	convStr := ""
 
 	switch in.Type.Name {

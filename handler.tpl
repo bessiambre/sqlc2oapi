@@ -8,9 +8,11 @@ import(
 	"github.com/ProlificLabs/snowball/api/oa3api/middleware"
 	"github.com/rotisserie/eris"
 	"github.com/ProlificLabs/snowball/dcontext"
+	"github.com/jackc/pgtype"
+	"github.com/aarondl/opt/null"
 )
 
-{{ range .Queries }}
+{{ $query := range .Queries }}
 /*** 
  * {{ .Name }}
  * {{ .Text | replace "\n" "\n * "}}
@@ -21,7 +23,7 @@ import(
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .Params }}{{ sqlToHandlerParam .Column }}{{end}}) (*sqlcoa3gen.{{ .Name }}Return, error) {
 	UserID, _ := dcontext.UserID(ctx)
 
-	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToCamel .Column.Name }}{{end}})
+	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToGoCamel .Column.Name }}{{end}})
 	if err != nil {
 		return nil, eris.Wrapf(err, "{{ .Name }}: query failure")
 	}
@@ -34,7 +36,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .
 	{{- else }}
 	return &sqlcoa3gen.{{ .Name }}Return{
 		{{- range .Columns }}
-        {{ snakeToCamel .Name | title }}: {{ sqlcTypeToOa3Type . }},
+        {{ snakeToCamel .Name | title }}: {{ sqlcTypeToOa3Type . $query.Name}},
         {{- end }}
 	}, nil
 	{{- end }}
@@ -47,6 +49,27 @@ func (s *ServiceV3) Wrap(next func(w http.ResponseWriter, r *http.Request) error
 
 
 func PgtypeJSONBtoMap(jsonb pgtype.JSONB) map[string]any {
+	if jsonb.Get() == nil {
+		return nil
+	}
+	switch v := jsonb.Get().(type) {
+	case map[string]any:
+		return v
+	case pgtype.Status:
+		return nil
+	default:
+		return nil
+	}
+}
+
+
+func NullPgtypeJSONBtoMap(nulljsonb null.Val[pgtype.JSONB]) *map[string]any {
+	if nulljsonb.IsNull(){
+		return nil
+	}
+
+	jsonb:=nulljsonb.GetOrZero()
+
 	if jsonb.Get() == nil {
 		return nil
 	}
