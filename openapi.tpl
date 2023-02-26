@@ -30,7 +30,7 @@ paths:
           application/json:
             schema:
               type: object
-              	properties:
+                properties:
                 {{- range .Params }}
                   {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
                 {{- end }}
