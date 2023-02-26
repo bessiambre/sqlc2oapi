@@ -376,7 +376,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 	return convStr
 }
 
-func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
+func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
 	convStr := ""
 
 	switch in.Type.Name {
