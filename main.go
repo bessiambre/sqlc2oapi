@@ -404,18 +404,18 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 	switch in.Type.Name {
 	case "json":
 		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSON(" + snakeToCamel(in.Name) + ")"
+			convStr = "MapPtrToNullPgtypeJSON(" + snakeToGoCamel(in.Name) + ")"
 		} else {
-			convStr = "MapToPgtypeJSON(" + snakeToCamel(in.Name) + ")"
+			convStr = "MapToPgtypeJSON(" + snakeToGoCamel(in.Name) + ")"
 		}
 	case "jsonb":
 		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSONB(" + snakeToCamel(in.Name) + ")"
+			convStr = "MapPtrToNullPgtypeJSONB(" + snakeToGoCamel(in.Name) + ")"
 		} else {
-			convStr = "MapToPgtypeJSONB(" + snakeToCamel(in.Name) + ")"
+			convStr = "MapToPgtypeJSONB(" + snakeToGoCamel(in.Name) + ")"
 		}
 	default:
-		convStr = snakeToCamel(in.Name)
+		convStr = snakeToGoCamel(in.Name)
 	}
 	return convStr
 }

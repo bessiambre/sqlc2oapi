@@ -33,11 +33,11 @@ var _ chrono.Date
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request, body sqlcoa3gen.{{ .Name }}Inline) (*sqlcoa3gen.{{ .Name }}Return, error) {
 	userId, _ := dcontext.UserID(r.Context())
 	{{ if eq (len .Params) 1 }}
-	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column }}{{end}})
+	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, body.{{ Oa3TypeTosqlcType .Column }}{{end}})
 	{{- else }}
 	res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
 		{{ range .Params }}
-			{{- snakeToGoCamel .Column.Name }}:{{ Oa3TypeTosqlcType .Column }},
+			{{- snakeToGoCamel .Column.Name }}:body.{{ Oa3TypeTosqlcType .Column }},
 		{{end -}}
 		},
 	)
