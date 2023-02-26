@@ -400,7 +400,7 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 }
 
 func Oa3TypeTosqlcType(in *pb.Column) string {
-	varName := "body." + snakeToCamel(in.Name)
+	varName := "body." + strings.Title(snakeToCamel(in.Name))
 	if in.Name == "user_id" {
 		return "userId"
 	}
