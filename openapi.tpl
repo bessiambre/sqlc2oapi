@@ -24,7 +24,7 @@ paths:
     
     get:
       operationId: {{ .Name }}
-	    requestBody:
+      requestBody:
         required: true
         content:
           application/json:
