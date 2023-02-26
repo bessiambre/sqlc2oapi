@@ -30,10 +30,10 @@ paths:
           application/json:
             schema:
               type: object
-                properties:
-                {{- range .Params }}
-                  {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
-                {{- end }}
+              properties:
+              {{- range .Params }}
+                {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
+              {{- end }}
       responses:
         '200':
           description: Query result
