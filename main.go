@@ -107,7 +107,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 		queriesForOapi = append(queriesForOapi, &newQuery)
 
 		if verbName(query.Name) == "" {
-			return nil, errors.New("query name must start with http verb Get, Post, Put, Patch or Delete")
+			return nil, fmt.Errorf("query name %s must start with http verb Get, Post, Put, Patch or Delete", query.Name)
 		}
 	}
 
