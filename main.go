@@ -285,7 +285,11 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 		typeStr += ", nullable: true"
 	}
 
-	return fmt.Sprintf("{ %s }", typeStr)
+	if in.IsArray {
+		return fmt.Sprintf("{type: array, items: { %s }}", typeStr)
+	} else {
+		return fmt.Sprintf("{ %s }", typeStr)
+	}
 }
 
 func sqlToHandlerParam(in *pb.Column) string {
@@ -326,7 +330,11 @@ func sqlToHandlerParam(in *pb.Column) string {
 		typeStr = fmt.Sprintf("null.Val[%s]", typeStr)
 	}
 
-	return fmt.Sprintf(", %s %s", snakeToCamel(in.Name), typeStr)
+	if in.IsArray {
+		return fmt.Sprintf(", %s []%s", snakeToCamel(in.Name), typeStr)
+	} else {
+		return fmt.Sprintf(", %s %s", snakeToCamel(in.Name), typeStr)
+	}
 }
 
 func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
