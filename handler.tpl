@@ -11,10 +11,14 @@ import(
 	"github.com/jackc/pgtype"
 	"github.com/aarondl/opt/null"
 	"github.com/ProlificLabs/snowball/sqlcapi/gen/apisqlc"
+	"github.com/shopspring/decimal"
+	"github.com/aarondl/chrono"
 )
 
 var _ apisqlc.Queries
 var _ sqlcoa3gen.ErrHandled
+var _ decimal.Decimal
+var _ chrono.Date
 
 {{ range $query := .Queries }}
 /*** 
