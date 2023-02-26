@@ -385,7 +385,7 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 	return convStr
 }
 
-func Oa3TypeTosqlcType(in *pb.Column, queryName string) string {
+func Oa3TypeTosqlcType(in *pb.Column) string {
 	convStr := ""
 	switch in.Type.Name {
 	case "json":
