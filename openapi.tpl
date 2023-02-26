@@ -21,7 +21,6 @@ paths:
   #Comments {{ .Comments }}
   #Filename {{ .Filename }}
   /{{ camelSnake .Name }}:
-    
     get:
       operationId: {{ .Name }}
       requestBody:
@@ -60,11 +59,11 @@ components:
       type: object
       properties:
         {{- range $i , $col := .Columns }}
-          {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}: {{ sqlToOa3Spec . }}
+          {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ sum $i 1 }}{{ end }}: {{ sqlToOa3Spec . }}
         {{- end }}
       required:
         {{- range $i, $col  := .Columns }}
-          - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}
+          - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ sum $i 1 }}{{ end }}
         {{- end }}
   {{ end }}
 
