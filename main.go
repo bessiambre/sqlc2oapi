@@ -105,6 +105,10 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 		}
 		newQuery.Params = newParams
 		queriesForOapi = append(queriesForOapi, &newQuery)
+
+		if verbName(query.Name) == "" {
+			return nil, errors.New("query name must start with http verb Get, Post, Put, Patch or Delete")
+		}
 	}
 
 	if !userIdFound {
@@ -451,7 +455,7 @@ func verbName(operationName string) string {
 	} else if strings.HasPrefix(operationName, "Delete") {
 		return "delete"
 	} else {
-		return "get"
+		return ""
 	}
 }
 
