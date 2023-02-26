@@ -59,11 +59,11 @@ components:
       type: object
       properties:
         {{- range $i , $col := .Columns }}
-          {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ sum $i 1 }}{{ end }}: {{ sqlToOa3Spec . }}
+          {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}: {{ sqlToOa3Spec . }}
         {{- end }}
       required:
         {{- range $i, $col  := .Columns }}
-          - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ sum $i 1 }}{{ end }}
+          - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}
         {{- end }}
   {{ end }}
 
