@@ -328,7 +328,7 @@ func sqlToHandlerParam(in *pb.Column) string {
 	return fmt.Sprintf(", %s %s", snakeToCamel(in.Name), typeStr)
 }
 
-func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
+func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 	convStr := ""
 
 	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" {
@@ -336,15 +336,20 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string) string {
 		return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
 	}
 
+	name := in.Name
+	if in.Name == "" {
+		name = "Column" + strconv.Itoa((i + 1))
+	}
+
 	switch in.Type.Name {
 	case "jsonb":
 		if in.NotNull {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
 		} else {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(in.Name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(in.Name)) + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
 		}
 	default:
-		convStr = "res." + strings.Title(snakeToGoCamel(in.Name))
+		convStr = "res." + strings.Title(snakeToGoCamel(name))
 	}
 
 	return convStr
@@ -367,12 +372,12 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 	return convStr
 }
 
-func handlerReturnParamName(in *pb.Column, index int32) string {
+func handlerReturnParamName(in *pb.Column, index int) string {
 	// snakeToCamel $col.Name | title
 	if in.Name != "" {
 		return strings.Title(snakeToCamel(in.Name))
 	}
-	return "Column" + strconv.Itoa(int(index+1))
+	return "Column" + strconv.Itoa(index+1)
 }
 
 // for debugging
