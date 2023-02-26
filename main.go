@@ -37,6 +37,7 @@ var TemplateFunctions = map[string]any{
 	"sqlcTypeToOa3Type":       sqlcTypeToOa3Type,
 	"sqlcTypeToOa3TypeSingle": sqlcTypeToOa3TypeSingle,
 	"handlerReturnParamName":  handlerReturnParamName,
+	"Oa3TypeTosqlcType":       Oa3TypeTosqlcType,
 }
 
 func main() {
@@ -342,9 +343,15 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 	}
 
 	switch in.Type.Name {
+	case "json":
+		if in.NotNull {
+			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
+		} else {
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
+		}
 	case "jsonb":
 		if in.NotNull {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
+			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
 		} else {
 			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
 		}
@@ -359,6 +366,12 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 	convStr := ""
 
 	switch in.Type.Name {
+	case "json":
+		if !in.NotNull {
+			convStr = "PgtypeJSONtoMap(res)"
+		} else {
+			convStr = "PgtypeJSONtoMap(res)"
+		}
 	case "jsonb":
 		if !in.NotNull {
 			convStr = "PgtypeJSONBtoMap(res)"
@@ -372,8 +385,28 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 	return convStr
 }
 
+func Oa3TypeTosqlcType(in *pb.Column, queryName string) string {
+	convStr := ""
+	switch in.Type.Name {
+	case "json":
+		if !in.NotNull {
+			convStr = "MapPtrToNullPgtypeJSON(" + snakeToCamel(in.Name) + ")"
+		} else {
+			convStr = "MapToPgtypeJSON(" + snakeToCamel(in.Name) + ")"
+		}
+	case "jsonb":
+		if !in.NotNull {
+			convStr = "MapPtrToNullPgtypeJSONB(" + snakeToCamel(in.Name) + ")"
+		} else {
+			convStr = "MapToPgtypeJSONB(" + snakeToCamel(in.Name) + ")"
+		}
+	default:
+		convStr = snakeToCamel(in.Name)
+	}
+	return convStr
+}
+
 func handlerReturnParamName(in *pb.Column, index int) string {
-	// snakeToCamel $col.Name | title
 	if in.Name != "" {
 		return strings.Title(snakeToCamel(in.Name))
 	}

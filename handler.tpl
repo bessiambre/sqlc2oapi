@@ -33,11 +33,11 @@ var _ chrono.Date
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .Params }}{{ sqlToHandlerParam .Column }}{{end}}) (*sqlcoa3gen.{{ .Name }}Return, error) {
 	userId, _ := dcontext.UserID(r.Context())
 	{{ if eq (len .Params) 1 }}
-	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ snakeToCamel .Column.Name }}{{end}})
+	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column }}{{end}})
 	{{- else }}
 	res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
 		{{ range .Params }}
-			{{- snakeToGoCamel .Column.Name }}:{{ snakeToCamel .Column.Name }},
+			{{- snakeToGoCamel .Column.Name }}:{{ Oa3TypeTosqlcType .Column }},
 		{{end -}}
 		},
 	)
@@ -108,8 +108,67 @@ func MapToPgtypeJSONB(in map[string]any) pgtype.JSONB {
 	return fd
 }
 
-func MapToNullPgtypeJSONB(in map[string]any) null.Val[pgtype.JSONB] {
-	fd := MapToPgtypeJSONB(in)
+func MapPtrToNullPgtypeJSONB(in *map[string]any) null.Val[pgtype.JSONB] {
+	if in==nil{
+		return null.From(pgtype.JSONB{Status: pgtype.Null})
+	}
+	fd := MapToPgtypeJSONB(*in)
+
+	nullfd := null.FromCond(fd, false)
+	if fd.Status == pgtype.Present {
+		nullfd.Set(fd)
+	}
+	return nullfd
+}
+
+
+func PgtypeJSONtoMap(json pgtype.JSON) map[string]any {
+	if json.Get() == nil {
+		return nil
+	}
+	switch v := json.Get().(type) {
+	case map[string]any:
+		return v
+	case pgtype.Status:
+		return nil
+	default:
+		return nil
+	}
+}
+
+func NullPgtypeJSONtoMap(nulljson null.Val[pgtype.JSON]) *map[string]any {
+	if nulljson.IsNull(){
+		return nil
+	}
+
+	json:=nulljson.GetOrZero()
+
+	if json.Get() == nil {
+		return nil
+	}
+	switch v := json.Get().(type) {
+	case map[string]any:
+		return &v
+	case pgtype.Status:
+		return nil
+	default:
+		return nil
+	}
+}
+
+func MapToPgtypeJSON(in map[string]any) pgtype.JSON {
+	fd := pgtype.JSON{Status: pgtype.Null}
+	if in != nil {
+		fd.Set(in)
+	}
+	return fd
+}
+
+func MapPtrToNullPgtypeJSON(in *map[string]any) null.Val[pgtype.JSON] {
+	if in==nil{
+		return null.From(pgtype.JSON{Status: pgtype.Null})
+	}
+	fd := MapToPgtypeJSON(*in)
 
 	nullfd := null.FromCond(fd, false)
 	if fd.Status == pgtype.Present {
