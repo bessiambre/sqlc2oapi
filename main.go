@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"text/template"
 	"unicode"
@@ -35,6 +36,7 @@ var TemplateFunctions = map[string]any{
 	"sqlToHandlerParam":       sqlToHandlerParam,
 	"sqlcTypeToOa3Type":       sqlcTypeToOa3Type,
 	"sqlcTypeToOa3TypeSingle": sqlcTypeToOa3TypeSingle,
+	"handlerReturnParamName":  handlerReturnParamName,
 }
 
 func main() {
@@ -363,6 +365,14 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 	}
 
 	return convStr
+}
+
+func handlerReturnParamName(in *pb.Column, index int32) string {
+	// snakeToCamel $col.Name | title
+	if in.Name != "" {
+		return strings.Title(snakeToCamel(in.Name))
+	}
+	return "Column" + strconv.Itoa(int(index+1))
 }
 
 // for debugging

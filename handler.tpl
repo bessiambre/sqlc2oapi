@@ -47,8 +47,8 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ range .
 	}, nil
 	{{- else }}
 	return &sqlcoa3gen.{{ .Name }}Return{
-		{{- range .Columns }}
-        {{ snakeToCamel .Name | title }}: {{ sqlcTypeToOa3Type . $query.Name}},
+		{{- range $i, $col := .Columns }}
+        {{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name}},
         {{- end }}
 	}, nil
 	{{- end }}
