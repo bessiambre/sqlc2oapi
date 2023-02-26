@@ -400,22 +400,26 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column, queryName string) string {
 }
 
 func Oa3TypeTosqlcType(in *pb.Column) string {
+	varName := "body." + snakeToGoCamel(in.Name)
+	if in.Name == "user_id" {
+		return "userId"
+	}
 	convStr := ""
 	switch in.Type.Name {
 	case "json":
 		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSON(" + snakeToGoCamel(in.Name) + ")"
+			convStr = "MapPtrToNullPgtypeJSON(" + varName + ")"
 		} else {
-			convStr = "MapToPgtypeJSON(" + snakeToGoCamel(in.Name) + ")"
+			convStr = "MapToPgtypeJSON(" + varName + ")"
 		}
 	case "jsonb":
 		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSONB(" + snakeToGoCamel(in.Name) + ")"
+			convStr = "MapPtrToNullPgtypeJSONB(" + varName + ")"
 		} else {
-			convStr = "MapToPgtypeJSONB(" + snakeToGoCamel(in.Name) + ")"
+			convStr = "MapToPgtypeJSONB(" + "body." + varName + ")"
 		}
 	default:
-		convStr = snakeToGoCamel(in.Name)
+		convStr = varName
 	}
 	return convStr
 }
