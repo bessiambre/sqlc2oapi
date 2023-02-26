@@ -54,12 +54,12 @@ components:
     {{ .Name }}Return:
       type: object
       properties:
-        {{- range .Columns }}
-          {{ .Name }}: {{ sqlToOa3Spec . }}
+        {{- range $col, $i := .Columns }}
+          {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}: {{ sqlToOa3Spec . }}
         {{- end }}
       required:
         {{- range .Columns }}
-          - {{ .Name }}
+          - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}
         {{- end }}
   {{ end }}
 
