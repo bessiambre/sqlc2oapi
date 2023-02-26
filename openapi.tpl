@@ -33,6 +33,10 @@ paths:
               {{- range .Params }}
                 {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
               {{- end }}
+              required:
+              {{- range .Params }}
+                - {{ sqlToOa3Spec .Column }}
+              {{- end }}
       responses:
         '200':
           description: Query result
