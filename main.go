@@ -416,7 +416,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		if !in.NotNull {
 			convStr = "MapPtrToNullPgtypeJSONB(" + varName + ")"
 		} else {
-			convStr = "MapToPgtypeJSONB(" + "body." + varName + ")"
+			convStr = "MapToPgtypeJSONB(" + varName + ")"
 		}
 	default:
 		convStr = varName
