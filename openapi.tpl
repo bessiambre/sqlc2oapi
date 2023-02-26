@@ -20,16 +20,20 @@ paths:
   #Cmd {{ .Cmd }}
   #Comments {{ .Comments }}
   #Filename {{ .Filename }}
-  /{{ .Name }}:
-    parameters:
-    {{- range .Params }}
-      - name: {{ .Column.Name }}
-        in: query
-        required: true
-        schema: {{ sqlToOa3Spec .Column }} #${{ .Number }}
-    {{- end }}
+  /{{ camelSnake .Name }}:
+    
     get:
       operationId: {{ .Name }}
+	  requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+				type: object
+              		properties:
+					{{- range .Params }}
+						{{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
+					{{- end }}
       responses:
         '200':
           description: Query result
