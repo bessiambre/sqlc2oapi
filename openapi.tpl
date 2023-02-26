@@ -55,11 +55,11 @@ components:
     {{ .Name }}Return:
       type: object
       properties:
-        {{- range $col, $i := .Columns }}
+        {{- range $i , $col := .Columns }}
           {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}: {{ sqlToOa3Spec . }}
         {{- end }}
       required:
-        {{- range $col, $i := .Columns }}
+        {{- range $i, $col  := .Columns }}
           - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}
         {{- end }}
   {{ end }}
