@@ -35,7 +35,7 @@ paths:
               {{- end }}
               required:
               {{- range .Params }}
-                - {{ sqlToOa3Spec .Column }}
+                - {{ .Column.Name }}
               {{- end }}
       responses:
         '200':

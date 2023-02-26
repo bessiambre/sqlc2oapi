@@ -292,7 +292,7 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 	}
 
 	if in.IsArray {
-		return fmt.Sprintf("{type: array, items: { %s }}", typeStr)
+		return fmt.Sprintf("{ type: array, items: { %s } }", typeStr)
 	} else {
 		return fmt.Sprintf("{ %s }", typeStr)
 	}
