@@ -20,8 +20,8 @@ paths:
   #Cmd {{ .Cmd }}
   #Comments {{ .Comments }}
   #Filename {{ .Filename }}
-  /{{ camelSnake .Name }}:
-    get:
+  /{{ pathName .Name }}:
+    {{ verbName .Name }}:
       operationId: {{ .Name }}
       requestBody:
         required: true

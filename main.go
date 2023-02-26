@@ -38,6 +38,8 @@ var TemplateFunctions = map[string]any{
 	"sqlcTypeToOa3TypeSingle": sqlcTypeToOa3TypeSingle,
 	"handlerReturnParamName":  handlerReturnParamName,
 	"Oa3TypeTosqlcType":       Oa3TypeTosqlcType,
+	"pathName":                pathName,
+	"verbName":                verbName,
 }
 
 func main() {
@@ -419,6 +421,38 @@ func handlerReturnParamName(in *pb.Column, index int) string {
 		return strings.Title(snakeToCamel(in.Name))
 	}
 	return "Column" + strconv.Itoa(index+1)
+}
+
+func pathName(operationName string) string {
+	if strings.HasPrefix(operationName, "Get") {
+		return camelSnake(operationName[3:])
+	} else if strings.HasPrefix(operationName, "Put") {
+		return camelSnake(operationName[3:])
+	} else if strings.HasPrefix(operationName, "Patch") {
+		return camelSnake(operationName[5:])
+	} else if strings.HasPrefix(operationName, "Post") {
+		return camelSnake(operationName[4:])
+	} else if strings.HasPrefix(operationName, "Delete") {
+		return camelSnake(operationName[6:])
+	} else {
+		return camelSnake(operationName)
+	}
+}
+
+func verbName(operationName string) string {
+	if strings.HasPrefix(operationName, "Get") {
+		return "get"
+	} else if strings.HasPrefix(operationName, "Put") {
+		return "put"
+	} else if strings.HasPrefix(operationName, "Patch") {
+		return "patch"
+	} else if strings.HasPrefix(operationName, "Post") {
+		return "post"
+	} else if strings.HasPrefix(operationName, "Delete") {
+		return "delete"
+	} else {
+		return "get"
+	}
 }
 
 // for debugging
