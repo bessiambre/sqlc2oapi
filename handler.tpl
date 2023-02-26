@@ -19,7 +19,9 @@ var _ sqlcoa3gen.ErrHandled
 {{ range $query := .Queries }}
 /*** 
  * {{ .Name }}
+ *
  * {{ .Text | replace "\n" "\n * "}}
+ *
  * {{ .Cmd }}
  * {{ .Comments }}
  * {{ .Filename }}

@@ -15,7 +15,8 @@ servers:
 paths:
   {{ range .Queries }}
   ### {{ .Name }} ###
-  #Query {{ .Text | replace "\n" "\n  # " }} 
+  #Query 
+  #  {{ .Text | replace "\n" "\n  #  " }} 
   #Cmd {{ .Cmd }}
   #Comments {{ .Comments }}
   #Filename {{ .Filename }}
@@ -58,7 +59,7 @@ components:
           {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}: {{ sqlToOa3Spec . }}
         {{- end }}
       required:
-        {{- range .Columns }}
+        {{- range $col, $i := .Columns }}
           - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ $i }}{{ end }}
         {{- end }}
   {{ end }}
