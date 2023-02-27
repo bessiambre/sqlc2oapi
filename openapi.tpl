@@ -23,7 +23,7 @@ paths:
   /{{ pathName .Name }}:
     {{ verbName .Name }}:
       operationId: {{ .Name }}
-      {{- if .Params -}}
+      {{- if .Params }}
       requestBody:
         required: true
         content:
