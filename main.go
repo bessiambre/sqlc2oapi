@@ -91,9 +91,10 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 	// }
 
 	//user_id is passed from logged in user don't include in oapi
-	userIdFound := false
+
 	var queriesForOapi []*pb.Query = make([]*pb.Query, 0, len(req.Queries))
 	for _, query := range req.Queries {
+		userIdFound := false
 		newQuery := *query
 		var newParams []*pb.Parameter = make([]*pb.Parameter, 0, len(query.Params))
 		for _, param := range query.Params {
@@ -109,10 +110,10 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 		if verbName(query.Name) == "" {
 			return nil, fmt.Errorf("query name %s must start with http verb Get, Post, Put, Patch or Delete", query.Name)
 		}
-	}
 
-	if !userIdFound {
-		return nil, errors.New("query must take @user_id parameter to verify permissions")
+		if !userIdFound {
+			return nil, errors.New("query must take @user_id parameter to verify permissions")
+		}
 	}
 
 	tmpl, err := template.New("openapi").Funcs(sprig.FuncMap()).Funcs(TemplateFunctions).Parse(openApiTpl)
