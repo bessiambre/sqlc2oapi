@@ -48,7 +48,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	{{ if eq (len .Columns) 1 }}
 	return &sqlcoa3gen.{{ .Name }}Return{
 		{{- range .Columns }}
-        {{ handlerReturnParamName . 1 }}: {{ sqlcTypeToOa3TypeSingle . }},
+        {{ handlerReturnParamName . 0 }}: {{ sqlcTypeToOa3TypeSingle . }},
         {{- end }}
 	}, nil
 	{{- else }}
