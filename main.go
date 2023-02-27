@@ -364,26 +364,26 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 		name = "Column" + strconv.Itoa((i + 1))
 	}
 
-	varName := strings.Title(snakeToGoCamel(name))
+	varName := "res." + strings.Title(snakeToGoCamel(name))
 
 	switch in.Type.Name {
 	case "json", "pg_catalog.json":
 		if in.NotNull {
-			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONtoMap(res." + varName + "))"
+			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONtoMap(" + varName + "))"
 		} else {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONtoMap(res." + varName + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONtoMap(" + varName + "))"
 		}
 	case "jsonb", "pg_catalog.jsonb":
 		if in.NotNull {
-			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(res." + varName + "))"
+			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(" + varName + "))"
 		} else {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(res." + varName + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(" + varName + "))"
 		}
 	case "numeric", "pg_catalog.numeric":
 		if in.NotNull {
 			convStr = varName
 		} else {
-			convStr = "null.FromCond(res." + varName + ".Decimal, res." + varName + ".Valid)"
+			convStr = "null.FromCond(" + varName + ".Decimal, " + varName + ".Valid)"
 		}
 	default:
 		convStr = varName
