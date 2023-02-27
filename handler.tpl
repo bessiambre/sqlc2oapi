@@ -30,7 +30,7 @@ var _ chrono.Date
  * {{ .Comments }}
  * {{ .Filename }}
  */
-func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request, body sqlcoa3gen.{{ .Name }}Inline) (*sqlcoa3gen.{{ .Name }}Return, error) {
+func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter{{ if .Params }}, r *http.Request, body sqlcoa3gen.{{ .Name }}Inline{{ end }}) (*sqlcoa3gen.{{ .Name }}Return, error) {
 	userId, _ := dcontext.UserID(r.Context())
 	{{ if eq (len .Params) 1 }}
 	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column }}{{end}})
