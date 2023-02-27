@@ -263,7 +263,7 @@ func snakeToGoCamel(name string) string {
 func sqlTypeToOa3SpecType(in *pb.Column) string {
 	typeStr := "type: object"
 
-	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" {
+	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" && in.Type.Name != "citext" {
 		//assume it's an enum for now
 		typeStr = "type: string"
 	} else {
@@ -285,6 +285,8 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: object"
 		case "json", "pg_catalog.json":
 			typeStr = "type: object"
+		case "citext":
+			typeStr = "type: string"
 		}
 	}
 	if !in.NotNull {
@@ -329,6 +331,8 @@ func sqlToHandlerParam(in *pb.Column) string {
 			typeStr = "map[string]any"
 		case "json", "pg_catalog.json":
 			typeStr = "map[string]any"
+		case "citext":
+			typeStr = "string"
 		}
 	}
 
@@ -346,9 +350,13 @@ func sqlToHandlerParam(in *pb.Column) string {
 func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 	convStr := ""
 
-	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" {
+	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" && in.Type.Name != "citext" {
 		//assume it's an enum for now
-		return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
+		if in.NotNull {
+			return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
+		} else {
+			return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
+		}
 	}
 
 	name := in.Name
@@ -356,21 +364,29 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 		name = "Column" + strconv.Itoa((i + 1))
 	}
 
+	varName := strings.Title(snakeToGoCamel(name))
+
 	switch in.Type.Name {
-	case "json":
+	case "json", "pg_catalog.json":
 		if in.NotNull {
-			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
+			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONtoMap(res." + varName + "))"
 		} else {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONtoMap(res." + varName + "))"
 		}
-	case "jsonb":
+	case "jsonb", "pg_catalog.jsonb":
 		if in.NotNull {
-			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
+			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(res." + varName + "))"
 		} else {
-			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(res." + strings.Title(snakeToGoCamel(name)) + "))"
+			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(res." + varName + "))"
+		}
+	case "numeric", "pg_catalog.numeric":
+		if in.NotNull {
+			convStr = varName
+		} else {
+			convStr = "null.FromCond(res." + varName + ".Decimal, res." + varName + ".Valid)"
 		}
 	default:
-		convStr = "res." + strings.Title(snakeToGoCamel(name))
+		convStr = varName
 	}
 
 	return convStr
@@ -380,17 +396,23 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
 	convStr := ""
 
 	switch in.Type.Name {
-	case "json":
+	case "json", "pg_catalog.json":
 		if !in.NotNull {
 			convStr = "PgtypeJSONtoMap(res)"
 		} else {
 			convStr = "PgtypeJSONtoMap(res)"
 		}
-	case "jsonb":
+	case "jsonb", "pg_catalog.jsonb":
 		if !in.NotNull {
 			convStr = "PgtypeJSONBtoMap(res)"
 		} else {
 			convStr = "PgtypeJSONBtoMap(res)"
+		}
+	case "numeric", "pg_catalog.numeric":
+		if in.NotNull {
+			convStr = "res"
+		} else {
+			convStr = "null.FromCond(res.Decimal, res.Valid)"
 		}
 	default:
 		convStr = "res"
@@ -406,17 +428,23 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 	}
 	convStr := ""
 	switch in.Type.Name {
-	case "json":
+	case "json", "pg_catalog.json":
 		if !in.NotNull {
 			convStr = "MapPtrToNullPgtypeJSON(" + varName + ")"
 		} else {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
 		}
-	case "jsonb":
+	case "jsonb", "pg_catalog.jsonb":
 		if !in.NotNull {
 			convStr = "MapPtrToNullPgtypeJSONB(" + varName + ")"
 		} else {
 			convStr = "MapToPgtypeJSONB(" + varName + ")"
+		}
+	case "numeric", "pg_catalog.numeric":
+		if in.NotNull {
+			convStr = varName
+		} else {
+			convStr = "decimal.NullDecimal{Decimal:" + varName + ".GetOrZero(), Valid: " + varName + ".IsSet()}"
 		}
 	default:
 		convStr = varName
