@@ -273,7 +273,7 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: integer, format: int32"
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "type: string, format: decimal"
-		case "text", "pg_catalog.text":
+		case "text", "varchar", "pg_catalog.text", "pg_catalog.varchar":
 			typeStr = "type: string"
 		case "date", "pg_catalog.date":
 			typeStr = "type: string, format: date"
