@@ -37,8 +37,8 @@ paths:
               required:
               {{- range .Params }}
                 - {{ .Column.Name }}
-              {{- end }}
-      {{- end -}}
+              {{- end -}}
+      {{- end }}
       responses:
         '200':
           description: Query result
