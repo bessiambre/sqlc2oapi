@@ -48,13 +48,13 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	{{ if eq (len .Columns) 1 }}
 	return &sqlcoa3gen.{{ .Name }}Return{
 		{{- range .Columns }}
-        {{ handlerReturnParamName . 0 }}: {{ sqlcTypeToOa3TypeSingle . }},
+        {{ handlerReturnParamName . 0 }}: {{ sqlcTypeToOa3Type . 0 true}},
         {{- end }}
 	}, nil
 	{{- else }}
 	return &sqlcoa3gen.{{ .Name }}Return{
 		{{- range $i, $col := .Columns }}
-        {{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i}},
+        {{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i false}},
         {{- end }}
 	}, nil
 	{{- end }}

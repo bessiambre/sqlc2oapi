@@ -28,17 +28,16 @@ var openApiTpl string
 var handlerTpl string
 
 var TemplateFunctions = map[string]any{
-	"camelSnake":              camelSnake,
-	"snakeToCamel":            snakeToCamel,
-	"snakeToGoCamel":          snakeToGoCamel,
-	"sqlToOa3Spec":            sqlTypeToOa3SpecType,
-	"sqlToHandlerParam":       sqlToHandlerParam,
-	"sqlcTypeToOa3Type":       sqlcTypeToOa3Type,
-	"sqlcTypeToOa3TypeSingle": sqlcTypeToOa3TypeSingle,
-	"handlerReturnParamName":  handlerReturnParamName,
-	"Oa3TypeTosqlcType":       Oa3TypeTosqlcType,
-	"pathName":                pathName,
-	"verbName":                verbName,
+	"camelSnake":             camelSnake,
+	"snakeToCamel":           snakeToCamel,
+	"snakeToGoCamel":         snakeToGoCamel,
+	"sqlToOa3Spec":           sqlTypeToOa3SpecType,
+	"sqlToHandlerParam":      sqlToHandlerParam,
+	"sqlcTypeToOa3Type":      sqlcTypeToOa3Type,
+	"handlerReturnParamName": handlerReturnParamName,
+	"Oa3TypeTosqlcType":      Oa3TypeTosqlcType,
+	"pathName":               pathName,
+	"verbName":               verbName,
 }
 
 func main() {
@@ -351,24 +350,27 @@ func sqlToHandlerParam(in *pb.Column) string {
 	}
 }
 
-func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
+func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) string {
 	convStr := ""
-
-	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" && in.Type.Name != "citext" {
-		//assume it's an enum for now
-		if in.NotNull {
-			return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
-		} else {
-			return "string(res." + strings.Title(snakeToGoCamel(in.Name)) + ")"
-		}
-	}
 
 	name := in.Name
 	if in.Name == "" {
 		name = "Column" + strconv.Itoa((i + 1))
 	}
 
-	varName := "res." + strings.Title(snakeToGoCamel(name))
+	varName := "res"
+	if !single {
+		varName = "res." + strings.Title(snakeToGoCamel(name))
+	}
+
+	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" && in.Type.Name != "citext" {
+		//assume it's an enum for now
+		if in.NotNull {
+			return "string(" + varName + ")"
+		} else {
+			return "null.FromCond(string(" + varName + "." + strings.Title(snakeToGoCamel(name)) + "), " + varName + ".Valid)"
+		}
+	}
 
 	switch in.Type.Name {
 	case "json", "pg_catalog.json":
@@ -402,46 +404,56 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 	return convStr
 }
 
-func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
-	convStr := ""
+// func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
+// 	convStr := ""
 
-	switch in.Type.Name {
-	case "json", "pg_catalog.json":
-		if !in.NotNull {
-			convStr = "PgtypeJSONtoMap(res)"
-		} else {
-			convStr = "PgtypeJSONtoMap(res)"
-		}
-	case "jsonb", "pg_catalog.jsonb":
-		if !in.NotNull {
-			convStr = "PgtypeJSONBtoMap(res)"
-		} else {
-			convStr = "PgtypeJSONBtoMap(res)"
-		}
-	case "numeric", "pg_catalog.numeric":
-		if in.NotNull {
-			convStr = "res"
-		} else {
-			convStr = "null.FromCond(res.Decimal, res.Valid)"
-		}
-	case "uuid", "pg_catalog.uuid":
-		if in.NotNull {
-			convStr = "res.URN()"
-		} else {
-			convStr = "null.FromCond(res.UUID.URN(), res.Valid)"
-		}
-	default:
-		convStr = "res"
-	}
+// 	switch in.Type.Name {
+// 	case "json", "pg_catalog.json":
+// 		if !in.NotNull {
+// 			convStr = "PgtypeJSONtoMap(res)"
+// 		} else {
+// 			convStr = "PgtypeJSONtoMap(res)"
+// 		}
+// 	case "jsonb", "pg_catalog.jsonb":
+// 		if !in.NotNull {
+// 			convStr = "PgtypeJSONBtoMap(res)"
+// 		} else {
+// 			convStr = "PgtypeJSONBtoMap(res)"
+// 		}
+// 	case "numeric", "pg_catalog.numeric":
+// 		if in.NotNull {
+// 			convStr = "res"
+// 		} else {
+// 			convStr = "null.FromCond(res.Decimal, res.Valid)"
+// 		}
+// 	case "uuid", "pg_catalog.uuid":
+// 		if in.NotNull {
+// 			convStr = "res.URN()"
+// 		} else {
+// 			convStr = "null.FromCond(res.UUID.URN(), res.Valid)"
+// 		}
+// 	default:
+// 		convStr = "res"
+// 	}
 
-	return convStr
-}
+// 	return convStr
+// }
 
 func Oa3TypeTosqlcType(in *pb.Column) string {
 	varName := "body." + strings.Title(snakeToCamel(in.Name))
 	if in.Name == "user_id" {
 		return "userId"
 	}
+
+	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" && in.Type.Name != "citext" {
+		//assume it's an enum for now
+		if in.NotNull {
+			return "(apisqlc." + strings.Title(snakeToGoCamel(in.Name)) + ")(" + varName + ")"
+		} else {
+			return "apisqlc.Null" + strings.Title(snakeToGoCamel(in.Name)) + "(" + strings.Title(snakeToGoCamel(in.Name)) + ":apisqlc." + strings.Title(snakeToGoCamel(in.Name)) + "(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet())"
+		}
+	}
+
 	convStr := ""
 	switch in.Type.Name {
 	case "json", "pg_catalog.json":
