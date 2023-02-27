@@ -389,6 +389,12 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int) string {
 		} else {
 			convStr = "null.FromCond(" + varName + ".Decimal, " + varName + ".Valid)"
 		}
+	case "uuid", "pg_catalog.uuid":
+		if in.NotNull {
+			convStr = varName + ".URN()"
+		} else {
+			convStr = "null.FromCond(" + varName + ".UUID.URN(), " + varName + ".Valid)"
+		}
 	default:
 		convStr = varName
 	}
@@ -417,6 +423,12 @@ func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
 			convStr = "res"
 		} else {
 			convStr = "null.FromCond(res.Decimal, res.Valid)"
+		}
+	case "uuid", "pg_catalog.uuid":
+		if in.NotNull {
+			convStr = "res.URN()"
+		} else {
+			convStr = "null.FromCond(res.UUID.URN(), res.Valid)"
 		}
 	default:
 		convStr = "res"
@@ -448,7 +460,13 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		if in.NotNull {
 			convStr = varName
 		} else {
-			convStr = "decimal.NullDecimal{Decimal:" + varName + ".GetOrZero(), Valid: " + varName + ".IsSet()}"
+			convStr = "decimal.NullDecimal{Decimal:" + varName + ".GetOrZero(), Valid:" + varName + ".IsSet()}"
+		}
+	case "uuid", "pg_catalog.uuid":
+		if in.NotNull {
+			convStr = "uuid.MustParse(" + varName + ")"
+		} else {
+			convStr = "uuid.NullUUID{UUID:uuid.MustParse(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet()}"
 		}
 	default:
 		convStr = varName
