@@ -23,6 +23,7 @@ paths:
   /{{ pathName .Name }}:
     {{ verbName .Name }}:
       operationId: {{ .Name }}
+      {{- if .Params -}}
       requestBody:
         required: true
         content:
@@ -37,6 +38,7 @@ paths:
               {{- range .Params }}
                 - {{ .Column.Name }}
               {{- end }}
+      {{- end -}}
       responses:
         '200':
           description: Query result
