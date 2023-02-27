@@ -319,7 +319,7 @@ func sqlToHandlerParam(in *pb.Column) string {
 			typeStr = "int32"
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "decimal.Decimal"
-		case "text", "pg_catalog.text":
+		case "text", "varchar", "pg_catalog.text", "pg_catalog.varchar":
 			typeStr = "string"
 		case "date", "pg_catalog.date":
 			typeStr = "chrono.Date"
