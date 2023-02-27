@@ -287,6 +287,8 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: object"
 		case "citext":
 			typeStr = "type: string"
+		case "uuid":
+			typeStr = "type: string"
 		}
 	}
 	if !in.NotNull {
@@ -332,6 +334,8 @@ func sqlToHandlerParam(in *pb.Column) string {
 		case "json", "pg_catalog.json":
 			typeStr = "map[string]any"
 		case "citext":
+			typeStr = "string"
+		case "uuid":
 			typeStr = "string"
 		}
 	}
