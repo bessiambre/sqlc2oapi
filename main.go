@@ -273,17 +273,17 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: integer, format: int32"
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "type: string, format: decimal"
-		case "text":
+		case "text", "pg_catalog.text":
 			typeStr = "type: string"
-		case "date":
+		case "date", "pg_catalog.date":
 			typeStr = "type: string, format: date"
-		case "timestamptz":
+		case "timestamptz", "pg_catalog.timestamptz":
 			typeStr = "type: string, format: date-time"
-		case "bool":
+		case "bool", "pg_catalog.bool":
 			typeStr = "type: boolean"
-		case "jsonb":
+		case "jsonb", "pg_catalog.jsonb":
 			typeStr = "type: object"
-		case "json":
+		case "json", "pg_catalog.json":
 			typeStr = "type: object"
 		}
 	}
@@ -317,17 +317,17 @@ func sqlToHandlerParam(in *pb.Column) string {
 			typeStr = "int32"
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "decimal.Decimal"
-		case "text":
+		case "text", "pg_catalog.text":
 			typeStr = "string"
-		case "date":
+		case "date", "pg_catalog.date":
 			typeStr = "chrono.Date"
-		case "timestamptz":
+		case "timestamptz", "pg_catalog.timestamptz":
 			typeStr = "chrono.DateTime"
 		case "bool", "pg_catalog.bool":
 			typeStr = "bool"
-		case "jsonb":
+		case "jsonb", "pg_catalog.jsonb":
 			typeStr = "map[string]any"
-		case "json":
+		case "json", "pg_catalog.json":
 			typeStr = "map[string]any"
 		}
 	}
