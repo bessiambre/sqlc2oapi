@@ -7,7 +7,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	ejson "encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -112,7 +111,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 		}
 
 		if !userIdFound {
-			return nil, errors.New("query must take @user_id parameter to verify permissions")
+			return nil, fmt.Errorf("query %s must take @user_id parameter to verify permissions", query.Name)
 		}
 	}
 
