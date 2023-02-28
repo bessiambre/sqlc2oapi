@@ -13,12 +13,14 @@ import(
 	"github.com/ProlificLabs/snowball/sqlcapi/gen/apisqlc"
 	"github.com/shopspring/decimal"
 	"github.com/aarondl/chrono"
+	"github.com/google/uuid"
 )
 
 var _ apisqlc.Queries
 var _ sqlcoa3gen.ErrHandled
 var _ decimal.Decimal
 var _ chrono.Date
+var _ uuid.UUID
 
 {{ range $query := .Queries }}
 /*** 
@@ -43,7 +45,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	)
 	{{- end }}
 	if err != nil {
-		return nil, eris.Wrapf(err, "{{ .Name }}: query failure")
+		return nil, eris.Wrapf(err, "{{ .Name }}; query failure")
 	}
 	{{ if eq (len .Columns) 1 }}
 	return &sqlcoa3gen.{{ .Name }}Return{
@@ -175,4 +177,12 @@ func MapPtrToNullPgtypeJSON(in *map[string]any) null.Val[pgtype.JSON] {
 		nullfd.Set(fd)
 	}
 	return nullfd
+}
+
+func ParseUuid(s string) uuid.UUID {
+	u, err := uuid.Parse(s)
+	if err != nil {
+		return uuid.UUID{}
+	}
+	return u
 }

@@ -476,9 +476,9 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		}
 	case "uuid", "pg_catalog.uuid":
 		if in.NotNull {
-			convStr = "uuid.MustParse(" + varName + ")"
+			convStr = "ParseUuid(" + varName + ")"
 		} else {
-			convStr = "uuid.NullUUID{UUID:uuid.MustParse(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet()}"
+			convStr = "uuid.NullUUID{UUID:ParseUuid(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet()}"
 		}
 	default:
 		convStr = varName
