@@ -13,14 +13,15 @@ servers:
           - https://api-master.pulley.com
           - http://localhost:8080
 paths:
-  {{ range .Queries }}
-  ### {{ .Name }} ###
+{{ range range $key, $queries := .QueriesByPathName }}
+  ### {{ $key }} ###
+  /{{ pathName $key }}:
   #Query 
   #  {{ .Text | replace "\n" "\n  #  " }} 
   #Cmd {{ .Cmd }}
   #Comments {{ .Comments }}
   #Filename {{ .Filename }}
-  /{{ pathName .Name }}:
+  {{ range $queries}}
     {{ verbName .Name }}:
       operationId: {{ .Name }}
       {{- if .Params }}
@@ -47,6 +48,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/{{ .Name }}Return'
   {{ end }}
+{{ end }}
 
 components:
   securitySchemes:
