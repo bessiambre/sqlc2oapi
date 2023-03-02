@@ -407,41 +407,6 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 	return convStr
 }
 
-// func sqlcTypeToOa3TypeSingle(in *pb.Column) string {
-// 	convStr := ""
-
-// 	switch in.Type.Name {
-// 	case "json", "pg_catalog.json":
-// 		if !in.NotNull {
-// 			convStr = "PgtypeJSONtoMap(res)"
-// 		} else {
-// 			convStr = "PgtypeJSONtoMap(res)"
-// 		}
-// 	case "jsonb", "pg_catalog.jsonb":
-// 		if !in.NotNull {
-// 			convStr = "PgtypeJSONBtoMap(res)"
-// 		} else {
-// 			convStr = "PgtypeJSONBtoMap(res)"
-// 		}
-// 	case "numeric", "pg_catalog.numeric":
-// 		if in.NotNull {
-// 			convStr = "res"
-// 		} else {
-// 			convStr = "null.FromCond(res.Decimal, res.Valid)"
-// 		}
-// 	case "uuid", "pg_catalog.uuid":
-// 		if in.NotNull {
-// 			convStr = "res.URN()"
-// 		} else {
-// 			convStr = "null.FromCond(res.UUID.URN(), res.Valid)"
-// 		}
-// 	default:
-// 		convStr = "res"
-// 	}
-
-// 	return convStr
-// }
-
 func Oa3TypeTosqlcType(in *pb.Column) string {
 	varName := "body." + strings.Title(snakeToCamel(in.Name))
 	if in.Name == "user_id" {
@@ -461,13 +426,13 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 	switch in.Type.Name {
 	case "json", "pg_catalog.json":
 		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSON(" + varName + ")"
+			convStr = "MapPtrToNullPgtypeJSON((*map[string]any)(" + varName + "))"
 		} else {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
 		}
 	case "jsonb", "pg_catalog.jsonb":
 		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSONB(" + varName + ")"
+			convStr = "MapPtrToNullPgtypeJSONB((*map[string]any)(" + varName + "))"
 		} else {
 			convStr = "MapToPgtypeJSONB(" + varName + ")"
 		}

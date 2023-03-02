@@ -13,10 +13,10 @@ servers:
           - https://api-master.pulley.com
           - http://localhost:8080
 paths:
-{{ range $key, $queries := .QueriesByPathName }}
+{{ range $key, $queries := .QueriesByPathName -}}
   ### {{ $key }} ###
   /{{ pathName $key }}:
-  {{ range $queries}}
+  {{ range $queries -}}
   #Query 
   #  {{ .Text | replace "\n" "\n  #  " }} 
   #Cmd {{ .Cmd }}
