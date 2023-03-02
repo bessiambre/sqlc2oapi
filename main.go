@@ -90,7 +90,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 
 	//user_id is passed from logged in user don't include in oapi
 	queriesByPathName := map[string][]*pb.Query{}
-	//var queriesForOapi []*pb.Query = make([]*pb.Query, 0, len(req.Queries))
+	var queriesForOapi []*pb.Query = make([]*pb.Query, 0, len(req.Queries))
 	for _, query := range req.Queries {
 		userIdFound := false
 		newQuery := *query
@@ -103,7 +103,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 			}
 		}
 		newQuery.Params = newParams
-		//queriesForOapi = append(queriesForOapi, &newQuery)
+		queriesForOapi = append(queriesForOapi, &newQuery)
 
 		if verbName(query.Name) == "" {
 			return nil, fmt.Errorf("query name %s must start with http verb Get, Post, Put, Patch or Delete", query.Name)
@@ -123,6 +123,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 	buff := new(bytes.Buffer)
 	err = tmpl.Execute(buff, map[string]any{
 		"QueriesByPathName": queriesByPathName,
+		"Queries":           queriesForOapi,
 	})
 	if err != nil {
 		return nil, err
