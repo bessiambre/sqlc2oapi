@@ -16,12 +16,12 @@ paths:
 {{ range $key, $queries := .QueriesByPathName }}
   ### {{ $key }} ###
   /{{ pathName $key }}:
+  {{ range $queries}}
   #Query 
   #  {{ .Text | replace "\n" "\n  #  " }} 
   #Cmd {{ .Cmd }}
   #Comments {{ .Comments }}
   #Filename {{ .Filename }}
-  {{ range $queries}}
     {{ verbName .Name }}:
       operationId: {{ .Name }}
       {{- if .Params }}
