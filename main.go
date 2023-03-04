@@ -386,8 +386,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 					out[i]=PgtypeJSONtoMap(in[i])
 				}
 				return out
-			}(` + varName + `),
-			`
+			}(` + varName + `)`
 		} else if in.NotNull {
 			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONtoMap(" + varName + "))"
 		} else {
@@ -403,8 +402,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 					out[i]=PgtypeJSONBtoMap(in[i])
 				}
 				return out
-			}(` + varName + `),
-			`
+			}(` + varName + `)`
 		} else if in.NotNull {
 			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(" + varName + "))"
 		} else {
