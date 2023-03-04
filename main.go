@@ -263,6 +263,8 @@ func snakeToGoCamel(name string) string {
 }
 
 func sqlTypeToOa3SpecType(in *pb.Column) string {
+	fmt.Println("Name", in.Type.Name)
+	fmt.Println("Schema", in.Type.Schema)
 	typeStr := "type: object"
 
 	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" && in.Type.Name != "citext" {
@@ -296,6 +298,8 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 	if !in.NotNull {
 		typeStr += ", nullable: true"
 	}
+
+	fmt.Println("typeStr", typeStr)
 
 	if in.IsArray {
 		return fmt.Sprintf("{ type: array, items: { %s } }", typeStr)
