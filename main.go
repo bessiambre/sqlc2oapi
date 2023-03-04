@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -264,8 +263,8 @@ func snakeToGoCamel(name string) string {
 }
 
 func sqlTypeToOa3SpecType(in *pb.Column) string {
-	log.Println("Name", in.Type.Name)
-	log.Println("Schema", in.Type.Schema)
+	fmt.Fprintln(os.Stderr, "Name", in.Type.Name)
+	fmt.Fprintln(os.Stderr, "Schema", in.Type.Schema)
 	typeStr := "type: object"
 
 	if in.Type.Schema != "pg_catalog" && in.Type.Schema != "" && in.Type.Name != "citext" {
@@ -300,7 +299,7 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 		typeStr += ", nullable: true"
 	}
 
-	log.Println("typeStr", typeStr)
+	fmt.Fprintln(os.Stderr, "typeStr", typeStr)
 
 	if in.IsArray {
 		return fmt.Sprintf("{ type: array, items: { %s } }", typeStr)
