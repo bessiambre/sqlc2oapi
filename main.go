@@ -453,9 +453,9 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 	if typeSchema != "pg_catalog" && typeSchema != "" && typeName != "citext" {
 		//assume it's an enum for now
 		if in.NotNull {
-			return "(apisqlc." + strings.Title(snakeToGoCamel(in.Name)) + ")(" + varName + ")"
+			return "(apisqlc." + strings.Title(snakeToGoCamel(typeName)) + ")(" + varName + ")"
 		} else {
-			return "apisqlc.Null" + strings.Title(snakeToGoCamel(in.Name)) + "(" + strings.Title(snakeToGoCamel(in.Name)) + ":apisqlc." + strings.Title(snakeToGoCamel(in.Name)) + "(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet())"
+			return "apisqlc.Null" + strings.Title(snakeToGoCamel(typeName)) + "(" + strings.Title(snakeToGoCamel(in.Name)) + ":apisqlc." + strings.Title(snakeToGoCamel(in.Name)) + "(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet())"
 		}
 	}
 
