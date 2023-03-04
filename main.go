@@ -327,8 +327,8 @@ func sqlToHandlerParam(in *pb.Column) string {
 
 	typeStr := "any"
 
-	schema, name := schemaAndName(*in.Type)
-	if schema != "pg_catalog" && schema != "" && name != "citext" {
+	typeSchema, typeName := schemaAndName(*in.Type)
+	if typeSchema != "pg_catalog" && typeSchema != "" && typeName != "citext" {
 		//assume it's an enum for now
 		typeStr = "string"
 	} else {
@@ -381,8 +381,8 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 		varName = "res." + strings.Title(snakeToGoCamel(name))
 	}
 
-	schema, name := schemaAndName(*in.Type)
-	if schema != "pg_catalog" && schema != "" && name != "citext" {
+	typeSchema, typeName := schemaAndName(*in.Type)
+	if typeSchema != "pg_catalog" && typeSchema != "" && typeName != "citext" {
 		//assume it's an enum for now
 		if in.NotNull {
 			return "string(" + varName + ")"
@@ -449,8 +449,8 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		return "userId"
 	}
 
-	schema, name := schemaAndName(*in.Type)
-	if schema != "pg_catalog" && schema != "" && name != "citext" {
+	typeSchema, typeName := schemaAndName(*in.Type)
+	if typeSchema != "pg_catalog" && typeSchema != "" && typeName != "citext" {
 		//assume it's an enum for now
 		if in.NotNull {
 			return "(apisqlc." + strings.Title(snakeToGoCamel(in.Name)) + ")(" + varName + ")"
