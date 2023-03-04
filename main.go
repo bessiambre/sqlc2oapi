@@ -377,13 +377,35 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 
 	switch in.Type.Name {
 	case "json", "pg_catalog.json":
-		if in.NotNull {
+		if in.IsArray {
+			typeName := queryName + "Return" + strings.Title(snakeToCamel(name)) + "Item"
+			convStr = `
+			func(in []pgtype.JSONB)[]sqlcoa3gen.` + typeName + `{
+				out:=make([]sqlcoa3gen.` + typeName + `,len(in))
+				for i:=range in{
+					out[i]=PgtypeJSONtoMap(in[i])
+				}
+				return out
+			}(` + varName + `),
+			`
+		} else if in.NotNull {
 			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONtoMap(" + varName + "))"
 		} else {
 			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONtoMap(" + varName + "))"
 		}
 	case "jsonb", "pg_catalog.jsonb":
-		if in.NotNull {
+		if in.IsArray {
+			typeName := queryName + "Return" + strings.Title(snakeToCamel(name)) + "Item"
+			convStr = `
+			func(in []pgtype.JSONB)[]sqlcoa3gen.` + typeName + `{
+				out:=make([]sqlcoa3gen.` + typeName + `,len(in))
+				for i:=range in{
+					out[i]=PgtypeJSONBtoMap(in[i])
+				}
+				return out
+			}(` + varName + `),
+			`
+		} else if in.NotNull {
 			convStr = "(sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(PgtypeJSONBtoMap(" + varName + "))"
 		} else {
 			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(" + varName + "))"
@@ -425,16 +447,17 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 	convStr := ""
 	switch in.Type.Name {
 	case "json", "pg_catalog.json":
-		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSON((*map[string]any)(" + varName + "))"
-		} else {
+		if in.NotNull {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
+		} else {
+			convStr = "MapPtrToNullPgtypeJSON((*map[string]any)(" + varName + "))"
 		}
 	case "jsonb", "pg_catalog.jsonb":
-		if !in.NotNull {
-			convStr = "MapPtrToNullPgtypeJSONB((*map[string]any)(" + varName + "))"
-		} else {
+		if in.NotNull {
 			convStr = "MapToPgtypeJSONB(" + varName + ")"
+
+		} else {
+			convStr = "MapPtrToNullPgtypeJSONB((*map[string]any)(" + varName + "))"
 		}
 	case "numeric", "pg_catalog.numeric":
 		if in.NotNull {
