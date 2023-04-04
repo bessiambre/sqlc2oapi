@@ -1,6 +1,6 @@
 module github.com/bessiambre/sqlc2oapi
 
-go 1.19
+go 1.18
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible

@@ -3,17 +3,20 @@
 package sqlcoa3api
 
 import(
+	"encoding/json"
 	"net/http"
-	"github.com/ProlificLabs/snowball/sqlcapi/gen/sqlcoa3gen"
+
 	"github.com/ProlificLabs/snowball/api/oa3api/middleware"
-	"github.com/rotisserie/eris"
 	"github.com/ProlificLabs/snowball/dcontext"
-	"github.com/jackc/pgtype"
-	"github.com/aarondl/opt/null"
 	"github.com/ProlificLabs/snowball/sqlcapi/gen/apisqlc"
-	"github.com/shopspring/decimal"
+	"github.com/ProlificLabs/snowball/sqlcapi/gen/sqlcoa3gen"
 	"github.com/aarondl/chrono"
+	"github.com/aarondl/opt/null"
 	"github.com/google/uuid"
+	"github.com/jackc/pgtype"
+	"github.com/rotisserie/eris"
+	"github.com/shopspring/decimal"
+	"github.com/jackc/pgconn"
 )
 
 var _ apisqlc.Queries
@@ -45,7 +48,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	)
 	{{- end }}
 	if err != nil {
-		return nil, eris.Wrapf(err, "{{ .Name }}; query failure")
+		return nil, eris.Wrapf(processPgError(err), "{{ .Name }}; query failure")
 	}
 	{{ if eq (len .Columns) 1 }}
 	return &sqlcoa3gen.{{ .Name }}Return{
@@ -185,4 +188,26 @@ func ParseUuid(s string) uuid.UUID {
 		return uuid.UUID{}
 	}
 	return u
+}
+
+type PgJsonError struct {
+	Message string `json:"message"`
+	Code string `json:"code"`
+}
+
+func (e PgJsonError) Error() string {
+	return e.Message
+}
+
+func processPgError(errIn error) error {
+	errPg,ok:=errIn.(*pgconn.PgError)
+	if !ok{
+		return errIn
+	}
+	errOut := PgJsonError{}
+	err := json.Unmarshal([]byte(errPg.Message), &errOut)
+	if err != nil {
+		return errIn
+	}
+	return errOut
 }
