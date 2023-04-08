@@ -409,7 +409,16 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 
 	switch in.Type.Name {
 	case "int2", "pg_catalog.int2":
-		if in.NotNull {
+		if in.IsArray {
+			convStr = `
+			func(in []int16)[]int32{
+				out:=make([]int16,len(in))
+				for i:=range in{
+					out[i]=int32(in[i])
+				}
+				return out
+			}(` + varName + `)`
+		} else if in.NotNull {
 			convStr = "int32(" + varName + ")"
 		} else {
 			convStr = "null.FromCond(int32(" + varName + ".GetOrZero())," + varName + ".IsSet())"
@@ -484,7 +493,16 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 	convStr := ""
 	switch in.Type.Name {
 	case "int2", "pg_catalog.int2":
-		if in.NotNull {
+		if in.IsArray {
+			convStr = `
+			func(in []int32)[]int16{
+				out:=make([]int16,len(in))
+				for i:=range in{
+					out[i]=int16(in[i])
+				}
+				return out
+			}(` + varName + `)`
+		} else if in.NotNull {
 			convStr = "int16(" + varName + ")"
 		} else {
 			convStr = "null.FromCond(int16(" + varName + ".GetOrZero())," + varName + ".IsSet())"
