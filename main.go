@@ -406,6 +406,14 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 	}
 
 	switch in.Type.Name {
+	case "int2", "pg_catalog.int2":
+		if in.NotNull {
+			convStr = "int32(" + varName + ")"
+		} else {
+			convStr = "null.FromCond(int32(" + varName + ".GetOrZero(),varName.IsSet())"
+		}
+	case "float4", "pg_catalog.float4":
+		convStr = "float64(" + varName + ")"
 	case "json", "pg_catalog.json":
 		if in.IsArray {
 			typeName := queryName + "Return" + strings.Title(snakeToCamel(name)) + "Item"
@@ -475,6 +483,10 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 
 	convStr := ""
 	switch in.Type.Name {
+	case "int2", "pg_catalog.int2":
+		convStr = "int16(" + varName + ")"
+	case "float4", "pg_catalog.float4":
+		convStr = "float32(" + varName + ")"
 	case "json", "pg_catalog.json":
 		if in.NotNull {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
