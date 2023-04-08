@@ -293,8 +293,10 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: integer, format: int64"
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "type: string, format: decimal"
-		case "float4", "pg_catalog.float4", "float8", "pg_catalog.float8":
+		case "float4", "pg_catalog.float4":
 			typeStr = "type: number, format: float"
+		case "float8", "pg_catalog.float8":
+			typeStr = "type: number, format: double"
 		case "text", "varchar", "pg_catalog.text", "pg_catalog.varchar":
 			typeStr = "type: string"
 		case "date", "pg_catalog.date":
@@ -410,7 +412,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 		if in.NotNull {
 			convStr = "int32(" + varName + ")"
 		} else {
-			convStr = "null.FromCond(int32(" + varName + ".GetOrZero()," + varName + ".IsSet()))"
+			convStr = "null.FromCond(int32(" + varName + ".GetOrZero())," + varName + ".IsSet())"
 		}
 	case "float4", "pg_catalog.float4":
 		convStr = "float64(" + varName + ")"
@@ -487,7 +489,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		if in.NotNull {
 			convStr = "int16(" + varName + ")"
 		} else {
-			convStr = "null.FromCond(int16(" + varName + ".GetOrZero()," + varName + ".IsSet()))"
+			convStr = "null.FromCond(int16(" + varName + ".GetOrZero())," + varName + ".IsSet())"
 		}
 	case "float4", "pg_catalog.float4":
 		convStr = "float32(" + varName + ")"
