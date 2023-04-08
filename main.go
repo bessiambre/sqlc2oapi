@@ -410,14 +410,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 	switch in.Type.Name {
 	case "int2", "pg_catalog.int2":
 		if in.IsArray {
-			convStr = `
-			func(in []int16)[]int32{
-				out:=make([]int16,len(in))
-				for i:=range in{
-					out[i]=int32(in[i])
-				}
-				return out
-			}(` + varName + `)`
+			convStr = "Int16ToInt32Array(" + varName + ")"
 		} else if in.NotNull {
 			convStr = "int32(" + varName + ")"
 		} else {
@@ -494,14 +487,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 	switch in.Type.Name {
 	case "int2", "pg_catalog.int2":
 		if in.IsArray {
-			convStr = `
-			func(in []int32)[]int16{
-				out:=make([]int16,len(in))
-				for i:=range in{
-					out[i]=int16(in[i])
-				}
-				return out
-			}(` + varName + `)`
+			convStr = "Int32ToInt16Array(" + varName + ")"
 		} else if in.NotNull {
 			convStr = "int16(" + varName + ")"
 		} else {

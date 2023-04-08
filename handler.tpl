@@ -211,3 +211,19 @@ func processPgError(errIn error) error {
 	}
 	return errOut
 }
+
+func Int32ToInt16Array(in []int32)[]int16{
+	out:=make([]int16,len(in))
+	for i:=range in{
+		out[i]=int16(in[i])
+	}
+	return out
+}
+
+func Int16ToInt32Array(in []int16)[]int32{
+	out:=make([]int32,len(in))
+	for i:=range in{
+		out[i]=int32(in[i])
+	}
+	return out
+}
