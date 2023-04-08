@@ -341,7 +341,7 @@ func sqlToHandlerParam(in *pb.Column) string {
 
 		switch in.Type.Name {
 		case "int2", "pg_catalog.int2":
-			typeStr = "int16"
+			typeStr = "int32"
 		case "int4", "pg_catalog.int4":
 			typeStr = "int32"
 		case "int8", "pg_catalog.int8":
@@ -349,7 +349,7 @@ func sqlToHandlerParam(in *pb.Column) string {
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "decimal.Decimal"
 		case "float4", "pg_catalog.float4":
-			typeStr = "float32"
+			typeStr = "float64"
 		case "float8", "pg_catalog.float8":
 			typeStr = "float64"
 		case "text", "varchar", "pg_catalog.text", "pg_catalog.varchar":
