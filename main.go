@@ -285,10 +285,16 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 	} else {
 
 		switch in.Type.Name {
+		case "int2", "pg_catalog.int2":
+			typeStr = "type: integer, format: int32"
 		case "int4", "pg_catalog.int4":
 			typeStr = "type: integer, format: int32"
+		case "int8", "pg_catalog.int8":
+			typeStr = "type: integer, format: int64"
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "type: string, format: decimal"
+		case "float4", "pg_catalog.float4", "float8", "pg_catalog.float8":
+			typeStr = "type: number, format: float"
 		case "text", "varchar", "pg_catalog.text", "pg_catalog.varchar":
 			typeStr = "type: string"
 		case "date", "pg_catalog.date":
@@ -334,10 +340,18 @@ func sqlToHandlerParam(in *pb.Column) string {
 	} else {
 
 		switch in.Type.Name {
+		case "int2", "pg_catalog.int2":
+			typeStr = "int16"
 		case "int4", "pg_catalog.int4":
 			typeStr = "int32"
+		case "int8", "pg_catalog.int8":
+			typeStr = "int64"
 		case "numeric", "pg_catalog.numeric":
 			typeStr = "decimal.Decimal"
+		case "float4", "pg_catalog.float4":
+			typeStr = "float32"
+		case "float8", "pg_catalog.float8":
+			typeStr = "float64"
 		case "text", "varchar", "pg_catalog.text", "pg_catalog.varchar":
 			typeStr = "string"
 		case "date", "pg_catalog.date":
