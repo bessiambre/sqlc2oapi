@@ -300,7 +300,7 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 		case "text", "varchar", "bpchar", "pg_catalog.text", "pg_catalog.varchar", "pg_catalog.bpchar":
 			typeStr = "type: string"
 		case "bytea", "pg_catalog.bytea":
-			typeStr = "type: string, format:byte"
+			typeStr = "type: string, format: byte"
 		case "date", "pg_catalog.date":
 			typeStr = "type: string, format: date"
 		case "timestamptz", "pg_catalog.timestamptz":
