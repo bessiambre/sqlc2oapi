@@ -464,6 +464,14 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 		} else {
 			convStr = "null.FromCond(" + varName + ".UUID.URN(), " + varName + ".Valid)"
 		}
+	case "bytea", "pg_catalog.bytea":
+		if in.IsArray {
+			convStr = "BytesToStringArray(" + varName + ")"
+		} else if in.NotNull {
+			convStr = "string(" + varName + ")"
+		} else {
+			convStr = "null.FromCond(string(" + varName + ".GetOrZero())," + varName + ".IsSet())"
+		}
 	default:
 		convStr = varName
 	}
@@ -521,6 +529,14 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 			convStr = "ParseUuid(" + varName + ")"
 		} else {
 			convStr = "uuid.NullUUID{UUID:ParseUuid(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet()}"
+		}
+	case "bytea", "pg_catalog.bytea":
+		if in.IsArray {
+			convStr = "StringToBytesArray(" + varName + ")"
+		} else if in.NotNull {
+			convStr = "[]byte(" + varName + ")"
+		} else {
+			convStr = "null.FromCond([]byte(" + varName + ".GetOrZero())," + varName + ".IsSet())"
 		}
 	default:
 		convStr = varName

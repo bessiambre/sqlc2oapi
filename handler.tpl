@@ -227,3 +227,19 @@ func Int16ToInt32Array(in []int16)[]int32{
 	}
 	return out
 }
+
+func StringToBytesArray(in []string)[][]byte{
+	out:=make([][]byte,len(in))
+	for i:=range in{
+		out[i]=[]byte(in[i])
+	}
+	return out
+}
+
+func BytesToStringArray(in [][]bayte)[]string{
+	out:=make([]string,len(in))
+	for i:=range in{
+		out[i]=string(in[i])
+	}
+	return out
+}
