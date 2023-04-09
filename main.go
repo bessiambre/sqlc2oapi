@@ -291,12 +291,12 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: integer, format: int32"
 		case "int8", "pg_catalog.int8":
 			typeStr = "type: integer, format: int64"
-		case "numeric", "pg_catalog.numeric":
+		case "numeric", "pg_catalog.numeric", "money", "pg_catalog.money":
 			typeStr = "type: string, format: decimal"
 		case "float4", "pg_catalog.float4":
 			typeStr = "type: number, format: float"
 		case "float8", "pg_catalog.float8":
-			typeStr = "type: number"
+			typeStr = "type: number, format: double"
 		case "text", "varchar", "pg_catalog.text", "pg_catalog.varchar":
 			typeStr = "type: string"
 		case "date", "pg_catalog.date":
@@ -348,7 +348,7 @@ func sqlToHandlerParam(in *pb.Column) string {
 			typeStr = "int32"
 		case "int8", "pg_catalog.int8":
 			typeStr = "int64"
-		case "numeric", "pg_catalog.numeric":
+		case "numeric", "pg_catalog.numeric", "money", "pg_catalog.money":
 			typeStr = "decimal.Decimal"
 		case "float4", "pg_catalog.float4":
 			typeStr = "float64"
@@ -448,7 +448,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 		} else {
 			convStr = "(*sqlcoa3gen." + queryName + "Return" + strings.Title(snakeToCamel(name)) + ")(NullPgtypeJSONBtoMap(" + varName + "))"
 		}
-	case "numeric", "pg_catalog.numeric":
+	case "numeric", "pg_catalog.numeric", "money", "pg_catalog.money":
 		if in.NotNull {
 			convStr = varName
 		} else {
@@ -506,7 +506,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		} else {
 			convStr = "MapPtrToNullPgtypeJSONB((*map[string]any)(" + varName + "))"
 		}
-	case "numeric", "pg_catalog.numeric":
+	case "numeric", "pg_catalog.numeric", "money", "pg_catalog.money":
 		if in.NotNull {
 			convStr = varName
 		} else {
