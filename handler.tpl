@@ -243,3 +243,19 @@ func BytesToStringArray(in [][]bayte)[]string{
 	}
 	return out
 }
+
+func NullStringToBytes( in null.Val[string])[]byte{
+	if in.IsSet(){
+		return []byte(in.GetOrZero())
+	}else{
+		return nil
+	}
+}
+
+func BytesToNullString( in []byte)null.Val[string]{
+	if in != nil{
+		return null.From(string(in))
+	}else{
+		return null.Val[string]{}
+	}
+}
