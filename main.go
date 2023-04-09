@@ -299,6 +299,8 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: number, format: double"
 		case "text", "varchar", "bpchar", "pg_catalog.text", "pg_catalog.varchar", "pg_catalog.bpchar":
 			typeStr = "type: string"
+		case "bytea", "pg_catalog.bytea":
+			typeStr = "type: string, format:byte"
 		case "date", "pg_catalog.date":
 			typeStr = "type: string, format: date"
 		case "timestamptz", "pg_catalog.timestamptz":
@@ -356,6 +358,8 @@ func sqlToHandlerParam(in *pb.Column) string {
 			typeStr = "float64"
 		case "text", "varchar", "bpchar", "pg_catalog.text", "pg_catalog.varchar", "pg_catalog.bpchar":
 			typeStr = "string"
+		case "bytea", "pg_catalog.bytea":
+			typeStr = "[]byte"
 		case "date", "pg_catalog.date":
 			typeStr = "chrono.Date"
 		case "timestamptz", "pg_catalog.timestamptz":
