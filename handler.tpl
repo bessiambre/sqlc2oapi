@@ -38,11 +38,11 @@ var _ uuid.UUID
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (len .Params) 1 }}, body sqlcoa3gen.{{ .Name }}Inline{{ end }}) (*sqlcoa3gen.{{ .Name }}Return, error) {
 	userId, _ := dcontext.UserID(r.Context())
 	{{ if eq (len .Params) 1 }}
-	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column }}{{end}})
+	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column $query.Name }}{{end}})
 	{{- else }}
 	res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
 		{{ range .Params }}
-			{{- snakeToGoCamel .Column.Name }}:{{ Oa3TypeTosqlcType .Column }},
+			{{- snakeToGoCamel .Column.Name }}:{{ Oa3TypeTosqlcType .Column $query.Name }},
 		{{end -}}
 		},
 	)
@@ -111,14 +111,6 @@ func MapToPgtypeJSONB(in map[string]any) pgtype.JSONB {
 		fd.Set(in)
 	}
 	return fd
-}
-
-func MapToPgtypeJSONBArray(in []map[string]any) []pgtype.JSONB {
-	out := make([]pgtype.JSONB,len(in))
-	for i:=range in{
-		out[i]=MapToPgtypeJSONB(in[i])
-	}
-	return out
 }
 
 func MapPtrToNullPgtypeJSONB(in *map[string]any) null.Val[pgtype.JSONB] {
