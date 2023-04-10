@@ -515,7 +515,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		}
 	case "json", "pg_catalog.json":
 		if in.IsArray {
-			convStr = "MapToPgtypeJSONArray(([]map[string]any)" + varName + ")"
+			convStr = "MapToPgtypeJSONArray(([]map[string]any)(" + varName + "))"
 		} else if in.NotNull {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
 		} else {
@@ -523,7 +523,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		}
 	case "jsonb", "pg_catalog.jsonb":
 		if in.IsArray {
-			convStr = "MapToPgtypeJSONBArray(([]map[string]any)" + varName + ")"
+			convStr = "MapToPgtypeJSONBArray(([]map[string]any)(" + varName + "))"
 		} else if in.NotNull {
 			convStr = "MapToPgtypeJSONB(" + varName + ")"
 
