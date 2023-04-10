@@ -432,7 +432,7 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 		if in.IsArray {
 			typeName := queryName + "Return" + strings.Title(snakeToCamel(name)) + "Item"
 			convStr = `
-			func(in []pgtype.JSONB)[]sqlcoa3gen.` + typeName + `{
+			func(in []pgtype.JSON)[]sqlcoa3gen.` + typeName + `{
 				out:=make([]sqlcoa3gen.` + typeName + `,len(in))
 				for i:=range in{
 					out[i]=PgtypeJSONtoMap(in[i])
@@ -515,7 +515,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		}
 	case "json", "pg_catalog.json":
 		if in.IsArray {
-			convStr = "MapToPgtypeJSONArray(" + varName + ")"
+			convStr = "MapToPgtypeJSONArray(([]map[string]any)" + varName + ")"
 		} else if in.NotNull {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
 		} else {
@@ -523,7 +523,7 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 		}
 	case "jsonb", "pg_catalog.jsonb":
 		if in.IsArray {
-			convStr = "MapToPgtypeJSONBArray(" + varName + ")"
+			convStr = "MapToPgtypeJSONBArray(([]map[string]any)" + varName + ")"
 		} else if in.NotNull {
 			convStr = "MapToPgtypeJSONB(" + varName + ")"
 
