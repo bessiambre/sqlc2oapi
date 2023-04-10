@@ -301,12 +301,14 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: string"
 		case "bytea", "pg_catalog.bytea":
 			typeStr = "type: string, format: byte"
-		case "date", "pg_catalog.date":
-			typeStr = "type: string, format: date"
 		case "timestamp", "pg_catalog.timestamp":
 			typeStr = "type: string, format: date-time"
 		case "timestamptz", "pg_catalog.timestamptz":
 			typeStr = "type: string, format: date-time"
+		case "date", "pg_catalog.date":
+			typeStr = "type: string, format: date"
+		case "time", "pg_catalog.time":
+			typeStr = "type: string, format: time"
 		case "bool", "pg_catalog.bool":
 			typeStr = "type: boolean"
 		case "jsonb", "pg_catalog.jsonb":
@@ -362,12 +364,14 @@ func sqlToHandlerParam(in *pb.Column) string {
 			typeStr = "string"
 		case "bytea", "pg_catalog.bytea":
 			typeStr = "[]byte"
-		case "date", "pg_catalog.date":
-			typeStr = "chrono.Date"
 		case "timestamptz", "pg_catalog.timestamptz":
 			typeStr = "chrono.DateTime"
 		case "timestamp", "pg_catalog.timestamp":
 			typeStr = "chrono.DateTime"
+		case "date", "pg_catalog.date":
+			typeStr = "chrono.Date"
+		case "time", "pg_catalog.time":
+			typeStr = "chrono.Time"
 		case "bool", "pg_catalog.bool":
 			typeStr = "bool"
 		case "jsonb", "pg_catalog.jsonb":
