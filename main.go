@@ -467,7 +467,9 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 			convStr = "null.FromCond(" + varName + ".Decimal, " + varName + ".Valid)"
 		}
 	case "uuid", "pg_catalog.uuid":
-		if in.NotNull {
+		if in.IsArray {
+			convStr = "UuidToStringArray(" + varName + ")"
+		} else if in.NotNull {
 			convStr = varName + ".URN()"
 		} else {
 			convStr = "null.FromCond(" + varName + ".UUID.URN(), " + varName + ".Valid)"

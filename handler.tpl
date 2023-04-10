@@ -198,6 +198,14 @@ func ParseUuid(s string) uuid.UUID {
 	return u
 }
 
+func UuidToStringArray(in []uuid.UUID) []string {
+	out:=make([]string,len(in))
+	for i:=range in{
+		out[i]=in[i].URN()
+	}
+	return out
+}
+
 func ParseUuidArray(in []string) []uuid.UUID {
 	out:=make([]uuid.UUID,len(in))
 	for i:=range in{
