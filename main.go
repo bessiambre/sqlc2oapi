@@ -514,13 +514,17 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 			convStr = "null.FromCond(int16(" + varName + ".GetOrZero())," + varName + ".IsSet())"
 		}
 	case "json", "pg_catalog.json":
-		if in.NotNull {
+		if in.IsArray {
+			convStr = "MapToPgtypeJSONArray(" + varName + ")"
+		} else if in.NotNull {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
 		} else {
 			convStr = "MapPtrToNullPgtypeJSON((*map[string]any)(" + varName + "))"
 		}
 	case "jsonb", "pg_catalog.jsonb":
-		if in.NotNull {
+		if in.IsArray {
+			convStr = "MapToPgtypeJSONBArray(" + varName + ")"
+		} else if in.NotNull {
 			convStr = "MapToPgtypeJSONB(" + varName + ")"
 
 		} else {
@@ -533,7 +537,9 @@ func Oa3TypeTosqlcType(in *pb.Column) string {
 			convStr = "decimal.NullDecimal{Decimal:" + varName + ".GetOrZero(), Valid:" + varName + ".IsSet()}"
 		}
 	case "uuid", "pg_catalog.uuid":
-		if in.NotNull {
+		if in.IsArray {
+			convStr = "ParseUuidArray(" + varName + ")"
+		} else if in.NotNull {
 			convStr = "ParseUuid(" + varName + ")"
 		} else {
 			convStr = "uuid.NullUUID{UUID:ParseUuid(" + varName + ".GetOrZero()), Valid:" + varName + ".IsSet()}"

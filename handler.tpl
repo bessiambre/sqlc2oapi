@@ -113,6 +113,14 @@ func MapToPgtypeJSONB(in map[string]any) pgtype.JSONB {
 	return fd
 }
 
+func MapToPgtypeJSONBArray(in []map[string]any) []pgtype.JSONB {
+	out := make([]pgtype.JSONB,len(in))
+	for i:=range in{
+		out[i]=MapToPgtypeJSONB(in[i])
+	}
+	return out
+}
+
 func MapPtrToNullPgtypeJSONB(in *map[string]any) null.Val[pgtype.JSONB] {
 	if in==nil{
 		return null.From(pgtype.JSONB{Status: pgtype.Null})
@@ -169,6 +177,14 @@ func MapToPgtypeJSON(in map[string]any) pgtype.JSON {
 	return fd
 }
 
+func MapToPgtypeJSONArray(in []map[string]any) []pgtype.JSON {
+	out := make([]pgtype.JSON,len(in))
+	for i:=range in{
+		out[i]=MapToPgtypeJSON(in[i])
+	}
+	return out
+}
+
 func MapPtrToNullPgtypeJSON(in *map[string]any) null.Val[pgtype.JSON] {
 	if in==nil{
 		return null.From(pgtype.JSON{Status: pgtype.Null})
@@ -188,6 +204,14 @@ func ParseUuid(s string) uuid.UUID {
 		return uuid.UUID{}
 	}
 	return u
+}
+
+func ParseUuidArray(in []string) []uuid.UUID {
+	out:=make([]uuid.UUID,len(in))
+	for i:=range in{
+		out[i]=ParseUuid(in[i])
+	}
+	return out
 }
 
 type PgJsonError struct {
