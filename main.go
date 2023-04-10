@@ -515,7 +515,14 @@ func Oa3TypeTosqlcType(in *pb.Column, queryName string) string {
 		}
 	case "json", "pg_catalog.json":
 		if in.IsArray {
-			convStr = "MapToPgtypeJSONArray(([]map[string]any)(" + varName + "))"
+			typeName := queryName + "Inline" + strings.Title(snakeToCamel(in.Name)) + "Item"
+			convStr = `func(in []sqlcoa3gen.` + typeName + `) []pgtype.JSON {
+				out := make([]pgtype.JSON,len(in))
+				for i:=range in{
+					out[i]=MapToPgtypeJSON((map[string]any)(in[i]))
+				}
+				return out
+			}(` + varName + ")"
 		} else if in.NotNull {
 			convStr = "MapToPgtypeJSON(" + varName + ")"
 		} else {
