@@ -260,7 +260,7 @@ func StringToBytesArray(in []string)[][]byte{
 	return out
 }
 
-func BytesToStringArray(in [][]bayte)[]string{
+func BytesToStringArray(in [][]byte)[]string{
 	out:=make([]string,len(in))
 	for i:=range in{
 		out[i]=string(in[i])
