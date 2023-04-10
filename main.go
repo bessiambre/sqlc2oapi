@@ -303,6 +303,8 @@ func sqlTypeToOa3SpecType(in *pb.Column) string {
 			typeStr = "type: string, format: byte"
 		case "date", "pg_catalog.date":
 			typeStr = "type: string, format: date"
+		case "timestamp", "pg_catalog.timestamp":
+			typeStr = "type: string, format: date-time"
 		case "timestamptz", "pg_catalog.timestamptz":
 			typeStr = "type: string, format: date-time"
 		case "bool", "pg_catalog.bool":
@@ -363,6 +365,8 @@ func sqlToHandlerParam(in *pb.Column) string {
 		case "date", "pg_catalog.date":
 			typeStr = "chrono.Date"
 		case "timestamptz", "pg_catalog.timestamptz":
+			typeStr = "chrono.DateTime"
+		case "timestamp", "pg_catalog.timestamp":
 			typeStr = "chrono.DateTime"
 		case "bool", "pg_catalog.bool":
 			typeStr = "bool"
