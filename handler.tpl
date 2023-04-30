@@ -52,7 +52,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	}
 
 	{{ if eq .Cmd ":one" }}
-	r := res
+	r := pgRes
 	return &sqlcoa3gen.{{ .Name }}Return{
 		{{- range $i, $col := .Columns }}
         {{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i ( eq (len $query.Columns) 1 ) }},
