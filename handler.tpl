@@ -60,7 +60,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	}, nil
 	{{ else if eq .Cmd ":many" }}
 	resArray:=pgRes
-	return func() sqlcoa3gen.{{ .Name }}200Inline {
+	return func() *sqlcoa3gen.{{ .Name }}200Inline {
 		ret := make(sqlcoa3gen.{{ .Name }}200Inline,len(resArray))
 		for _,pr:= range resArray {
 			ret=append(ret,sqlcoa3gen.{{ .Name }}Return{
@@ -69,7 +69,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
         	{{- end }}
 			})
 		}
-		return ret;
+		return &ret;
 	}(), nil
 
 	{{ end }}
