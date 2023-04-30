@@ -30,7 +30,7 @@ paths:
         content:
           application/json:
             schema:
-			        $ref: '#/components/schemas/{{ .Name }}Params'
+              $ref: '#/components/schemas/{{ .Name }}Params'
               
       {{- end }}
       responses:
