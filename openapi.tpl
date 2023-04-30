@@ -30,15 +30,8 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-              {{- range .Params }}
-                {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
-              {{- end }}
-              required:
-              {{- range .Params }}
-                - {{ .Column.Name }}
-              {{- end -}}
+			        $ref: '#/components/schemas/{{ .Name }}Params'
+              
       {{- end }}
       responses:
         '200':
@@ -46,7 +39,11 @@ paths:
           content:
             application/json:
               schema:
+              {{ if eq .Cmd 'one' }}
                 $ref: '#/components/schemas/{{ .Name }}Return'
+              {{ else if eq .Cmd 'many' }}
+                { type: array, items: { $ref: '#/components/schemas/{{ .Name }}Return' } }
+              {{ end }}
   {{ end }}
 {{ end }}
 
@@ -63,6 +60,17 @@ components:
 ### BEGIN schemas ###
   schemas:
   {{- range .Queries }}
+    {{ .Name }}Params:
+    type: object
+      properties:
+      {{- range .Params }}
+      {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
+      {{- end }}
+      required:
+      {{- range .Params }}
+      - {{ .Column.Name }}
+      {{- end -}}
+
     {{ .Name }}Return:
       type: object
       properties:
@@ -73,6 +81,7 @@ components:
         {{- range $i, $col  := .Columns }}
           - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}
         {{- end }}
+
   {{ end }}
 
 security:
