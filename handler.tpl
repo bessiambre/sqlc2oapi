@@ -35,7 +35,7 @@ var _ uuid.UUID
  * {{ .Comments }}
  * {{ .Filename }}
  */
-func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (len .Params) 1 }}, body *sqlcoa3gen.{{ .Name }}Params{{ end }}) ({{ if eq .Cmd ":one" }}*sqlcoa3gen.{{ .Name }}Return{{ else if eq .Cmd ":many" }}sqlcoa3gen.{{ .Name }}200Inline{{ end }}, error) {
+func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (len .Params) 1 }}, body *sqlcoa3gen.{{ .Name }}Params{{ end }}) ({{ if eq .Cmd ":one" }}*sqlcoa3gen.{{ .Name }}Return{{ else if eq .Cmd ":many" }}*sqlcoa3gen.{{ .Name }}200Inline{{ end }}, error) {
 	userId, _ := dcontext.UserID(r.Context())
 	{{ if eq (len .Params) 1 }}
 	pgRes, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column $query.Name }}{{end}})
