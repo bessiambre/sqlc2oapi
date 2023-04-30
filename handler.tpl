@@ -67,6 +67,7 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 			{{- range $i, $col := .Columns }}
         		{{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i ( eq (len $query.Columns) 1 ) }},
         	{{- end }}
+			})
 		}
 		return ret;
 	}(), nil
