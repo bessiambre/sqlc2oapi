@@ -404,9 +404,9 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 		name = "Column" + strconv.Itoa((i + 1))
 	}
 
-	varName := "r"
+	varName := "pr"
 	if !single {
-		varName = "r." + strings.Title(snakeToGoCamel(name))
+		varName = "pr." + strings.Title(snakeToGoCamel(name))
 	}
 
 	typeSchema, typeName := schemaAndName(*in.Type)
