@@ -60,6 +60,7 @@ components:
 ### BEGIN schemas ###
   schemas:
   {{- range .Queries }}
+  {{- if .Params }}
     {{ .Name }}Params:
       type: object
       properties:
@@ -69,7 +70,8 @@ components:
       required:
       {{- range .Params }}
         - {{ .Column.Name }}
-      {{- end }}
+      {{- end -}}
+  {{- end }}
 
     {{ .Name }}Return:
       type: object
