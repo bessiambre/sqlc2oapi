@@ -17,7 +17,7 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/Masterminds/sprig"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/bessiambre/sqlc2oapi/pb"
 )
 
@@ -116,7 +116,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 		}
 	}
 
-	tmpl, err := template.New("openapi").Funcs(sprig.FuncMap()).Funcs(TemplateFunctions).Parse(openApiTpl)
+	tmpl, err := template.New("openapi").Funcs(sprig.TxtFuncMap()).Funcs(TemplateFunctions).Parse(openApiTpl)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func Generate(ctx context.Context, req *pb.CodeGenRequest) (*pb.CodeGenResponse,
 	}
 
 	filenameHandlers := "sqlcoa3api/handlers.go"
-	tmplHandlers, err := template.New("handlers").Funcs(sprig.FuncMap()).Funcs(TemplateFunctions).Parse(handlerTpl)
+	tmplHandlers, err := template.New("handlers").Funcs(sprig.TxtFuncMap()).Funcs(TemplateFunctions).Parse(handlerTpl)
 	if err != nil {
 		return nil, err
 	}
