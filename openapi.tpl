@@ -61,15 +61,15 @@ components:
   schemas:
   {{- range .Queries }}
     {{ .Name }}Params:
-    type: object
-    properties:
-    {{- range .Params }}
-      {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
-    {{- end }}
-    required:
-    {{- range .Params }}
-      - {{ .Column.Name }}
-    {{- end }}
+      type: object
+      properties:
+      {{- range .Params }}
+        {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
+      {{- end }}
+      required:
+      {{- range .Params }}
+        - {{ .Column.Name }}
+      {{- end }}
 
     {{ .Name }}Return:
       type: object
