@@ -404,9 +404,9 @@ func sqlcTypeToOa3Type(in *pb.Column, queryName string, i int, single bool) stri
 		name = "Column" + strconv.Itoa((i + 1))
 	}
 
-	varName := "res"
+	varName := "r"
 	if !single {
-		varName = "res." + strings.Title(snakeToGoCamel(name))
+		varName = "r." + strings.Title(snakeToGoCamel(name))
 	}
 
 	typeSchema, typeName := schemaAndName(*in.Type)
@@ -517,7 +517,7 @@ func Oa3TypeTosqlcType(in *pb.Column, queryName string) string {
 		}
 	case "json", "pg_catalog.json":
 		if in.IsArray {
-			typeName := queryName + "Inline" + strings.Title(snakeToCamel(in.Name)) + "Item"
+			typeName := queryName + "Params" + strings.Title(snakeToCamel(in.Name)) + "Item"
 			convStr = `func(in []sqlcoa3gen.` + typeName + `) []pgtype.JSON {
 				out := make([]pgtype.JSON,len(in))
 				for i:=range in{
@@ -532,7 +532,7 @@ func Oa3TypeTosqlcType(in *pb.Column, queryName string) string {
 		}
 	case "jsonb", "pg_catalog.jsonb":
 		if in.IsArray {
-			typeName := queryName + "Inline" + strings.Title(snakeToCamel(in.Name)) + "Item"
+			typeName := queryName + "Params" + strings.Title(snakeToCamel(in.Name)) + "Item"
 			convStr = `func(in []sqlcoa3gen.` + typeName + `) []pgtype.JSONB {
 				out := make([]pgtype.JSONB,len(in))
 				for i:=range in{

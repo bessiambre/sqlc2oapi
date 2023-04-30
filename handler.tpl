@@ -38,9 +38,9 @@ var _ uuid.UUID
 func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (len .Params) 1 }}, body sqlcoa3gen.{{ .Name }}Params{{ end }}) ({{ if eq .Cmd ":one" }}*sqlcoa3gen.{{ .Name }}Return{{ else if eq .Cmd ":many" }}sqlcoa3gen.{{ .Name }}200Inline{{ end }}, error) {
 	userId, _ := dcontext.UserID(r.Context())
 	{{ if eq (len .Params) 1 }}
-	res, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column $query.Name }}{{end}})
+	pgRes, err := s.Queries.{{ .Name }}(r.Context(){{ range .Params }}, {{ Oa3TypeTosqlcType .Column $query.Name }}{{end}})
 	{{- else }}
-	res, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
+	pgRes, err := s.Queries.{{ .Name }}(r.Context(), apisqlc.{{ .Name }}Params{
 		{{ range .Params }}
 			{{- snakeToGoCamel .Column.Name }}:{{ Oa3TypeTosqlcType .Column $query.Name }},
 		{{end -}}
@@ -50,19 +50,28 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	if err != nil {
 		return nil, eris.Wrapf(processPgError(err), "{{ .Name }}; query failure")
 	}
-	{{ if eq (len .Columns) 1 }}
-	return &sqlcoa3gen.{{ .Name }}Return{
-		{{- range .Columns }}
-        {{ handlerReturnParamName . 0 }}: {{ sqlcTypeToOa3Type . $query.Name 0 true}},
-        {{- end }}
-	}, nil
-	{{- else }}
+
+	{{ if eq .Cmd ":one" }}
+	r := res
 	return &sqlcoa3gen.{{ .Name }}Return{
 		{{- range $i, $col := .Columns }}
-        {{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i false}},
+        {{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i ( eq (len .Columns) 1 ) }},
         {{- end }}
 	}, nil
-	{{- end }}
+	{{ else if eq .Cmd ":many" }}
+	resArray:=pgRes
+	return func() sqlcoa3gen.{{ .Name }}200Inline {
+		ret := make(sqlcoa3gen.{{ .Name }}200Inline,len(resArray))
+		for _,r:= range resArray {
+			ret=append(ret,sqlcoa3gen.{{ .Name }}Return{
+			{{- range $i, $col := .Columns }}
+        		{{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i ( eq (len .Columns) 1 ) }},
+        	{{- end }}
+		}
+		return ret;
+	}(), nil
+
+	{{ end }}
 }
 {{- end }}
 
