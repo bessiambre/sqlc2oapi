@@ -64,7 +64,7 @@ components:
     type: object
       properties:
       {{- range .Params }}
-      {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
+        {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
       {{- end }}
       required:
       {{- range .Params }}
@@ -74,13 +74,13 @@ components:
     {{ .Name }}Return:
       type: object
       properties:
-        {{- range $i , $col := .Columns }}
-          {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}: {{ sqlToOa3Spec . }}
-        {{- end }}
+      {{- range $i , $col := .Columns }}
+        {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}: {{ sqlToOa3Spec . }}
+      {{- end }}
       required:
-        {{- range $i, $col  := .Columns }}
-          - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}
-        {{- end }}
+      {{- range $i, $col  := .Columns }}
+        - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}
+      {{- end }}
 
   {{ end }}
 
