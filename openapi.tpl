@@ -62,14 +62,14 @@ components:
   {{- range .Queries }}
     {{ .Name }}Params:
     type: object
-      properties:
-      {{- range .Params }}
-        {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
-      {{- end }}
-      required:
-      {{- range .Params }}
+    properties:
+    {{- range .Params }}
+      {{ .Column.Name }}: {{ sqlToOa3Spec .Column }}
+    {{- end }}
+    required:
+    {{- range .Params }}
       - {{ .Column.Name }}
-      {{- end -}}
+    {{- end -}}
 
     {{ .Name }}Return:
       type: object
@@ -81,7 +81,6 @@ components:
       {{- range $i, $col  := .Columns }}
         - {{ if $col.Name }}{{ $col.Name}}{{ else }}column{{ add $i 1 }}{{ end }}
       {{- end }}
-
   {{ end }}
 
 security:
