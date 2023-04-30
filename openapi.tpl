@@ -39,9 +39,9 @@ paths:
           content:
             application/json:
               schema:
-              {{ if eq .Cmd 'one' }}
+              {{ if eq .Cmd "one" }}
                 $ref: '#/components/schemas/{{ .Name }}Return'
-              {{ else if eq .Cmd 'many' }}
+              {{ else if eq .Cmd "many" }}
                 { type: array, items: { $ref: '#/components/schemas/{{ .Name }}Return' } }
               {{ end }}
   {{ end }}
