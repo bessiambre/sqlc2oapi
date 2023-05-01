@@ -62,12 +62,12 @@ func (s *ServiceV3) {{ .Name }}(w http.ResponseWriter, r *http.Request{{ if gt (
 	resArray:=pgRes
 	return func() *sqlcoa3gen.{{ .Name }}200Inline {
 		ret := make(sqlcoa3gen.{{ .Name }}200Inline,len(resArray))
-		for _,pr:= range resArray {
-			ret=append(ret,sqlcoa3gen.{{ .Name }}Return{
+		for i,pr:= range resArray {
+			ret[i]=sqlcoa3gen.{{ .Name }}Return{
 			{{- range $i, $col := .Columns }}
         		{{ handlerReturnParamName $col $i }}: {{ sqlcTypeToOa3Type $col $query.Name $i ( eq (len $query.Columns) 1 ) }},
         	{{- end }}
-			})
+			}
 		}
 		return &ret;
 	}(), nil
